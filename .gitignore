@@ -1,0 +1,15 @@
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+tools/bin/
+# reel work folders: your footage and renders stay on your machine
+reels/
+**/src/
+**/frames/
+**/stills/
+**/out/
+**/vo/*.mp3
+**/vo/*.json
+.env

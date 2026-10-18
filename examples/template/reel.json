@@ -1,0 +1,16 @@
+{
+ "vo": {"file": "vo/vo.mp3", "offset": 0.25},
+ "script": "Write the approved script here and mark the words each sentence is about with <em>accent</em> tags.",
+ "hook": {"tag": "your topic", "lines": ["first hook line,", "<em>the accent line</em>"], "out": 3.5},
+ "end": {"from": 25.0, "lines": ["one question", "<em>for the comments?</em>"], "lines_at": [25.1, 25.8], "sub": "tell me below", "sub_at": 26.5, "handle": "@yourhandle", "handle_at": 27.5},
+ "segments": [
+  {"id": "A", "clip": "src/first.mov", "ss": 0.5, "dur": 3.5},
+  {"id": "B", "clip": "src/second.mov", "ss": 2.0, "dur": 3.0, "in": "zoom"},
+  {"id": "C", "clip": "src/third.mov", "ss": 1.0, "dur": 4.0},
+  {"id": "D", "clip": "src/fourth.mov", "ss": 0.0, "dur": 4.0, "look": "burst"},
+  {"id": "E", "clip": "src/fifth.mov", "ss": 3.0, "dur": 5.0},
+  {"id": "F", "clip": "src/last.mov", "ss": 0.0, "dur": 9.0, "move": "pull-out", "in": "zoom"}
+ ],
+ "caption": "first line of the caption that does not repeat the hook\n\none call to action\n\n#tag1 #tag2 #tag3",
+ "music": "synth"
+}

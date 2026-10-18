@@ -1,0 +1,13 @@
+{
+  "name": "lalimi",
+  "description": "Claude Code plugins by lalimi",
+  "owner": { "name": "lalimi", "url": "https://github.com/lalimi" },
+  "plugins": [
+    {
+      "name": "reelsmith",
+      "source": "./",
+      "description": "Reels and TikToks from your own footage, directed and edited by Claude",
+      "category": "video"
+    }
+  ]
+}

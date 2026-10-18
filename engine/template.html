@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fonts.css">
+<script src="spec.js"></script>
+<style>
+:root{--cream:#F4EFE6;--ink:#1F1A17;--accent:#D4573A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;-webkit-font-smoothing:antialiased}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#000}
+#rig{position:absolute;inset:0;transform-origin:50% 45%}
+#shot,#cut{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cut{display:none}
+
+/* cover story: magazine masthead behind her (she is cut out and stands in front of it) */
+#mast{position:absolute;left:56px;right:56px;top:300px;opacity:0}
+#mast h2{font:900 200px/.86 'Playfair Display',serif;color:#FFF6E8;text-align:center;white-space:nowrap;letter-spacing:-.02em;text-shadow:0 6px 40px rgba(0,0,0,.28)}
+#mast h2 span{display:inline-block}
+#mast .issue{display:flex;justify-content:space-between;margin-top:18px;border-top:4px solid #FFF6E8;padding-top:12px;
+  font:700 26px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#FFF6E8;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+
+/* orbit: a ring of text around her head, the back half passes behind her */
+.orb{position:absolute;inset:0}
+.orb span{position:absolute;left:0;top:0;font:800 64px 'Manrope',sans-serif;color:#FFF6E8;white-space:pre;
+  text-shadow:0 3px 14px rgba(0,0,0,.5);will-change:transform}
+
+/* headline wall: draft file names pile up */
+#wall{position:absolute;inset:0;pointer-events:none}
+#wall .tile{position:absolute;display:flex;align-items:center;gap:16px;background:var(--cream);color:var(--ink);border-radius:18px;
+  padding:16px 24px 16px 18px;font:700 32px 'JetBrains Mono',monospace;letter-spacing:-.01em;white-space:nowrap;opacity:0;
+  box-shadow:0 2px 4px rgba(31,26,23,.15),0 22px 40px -18px rgba(0,0,0,.6)}
+#wall .tile i{flex:none;width:34px;height:42px;border-radius:5px;background:var(--accent);position:relative}
+#wall .tile i:after{content:"";position:absolute;right:0;top:0;border-style:solid;border-width:0 12px 12px 0;border-color:transparent var(--cream) rgba(0,0,0,.25) transparent}
+#flash{position:absolute;inset:0;background:#fff8ec;opacity:0;mix-blend-mode:screen}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 78% 62% at 50% 46%,transparent 55%,rgba(20,12,6,.42) 100%)}
+#grain{position:absolute;inset:0;opacity:.09;mix-blend-mode:overlay}
+#warm{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,186,120,.07),rgba(212,87,58,.05));mix-blend-mode:soft-light}
+
+/* Reels/TikTok safe zone: nothing above ~280px, below ~1500px, or in the right ~170px button column */
+.card{position:absolute;background:var(--cream);border-radius:34px;padding:46px 54px 50px;
+  box-shadow:0 2px 6px rgba(31,26,23,.12),0 40px 80px -30px rgba(31,26,23,.55);opacity:0}
+.card .tag{display:inline-flex;align-items:center;gap:12px;font:500 25px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink);border:2px solid rgba(31,26,23,.18);border-radius:999px;padding:9px 20px 9px 16px;margin-bottom:26px}
+.card .tag i{width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.card h1{font:900 54px/1.04 'Playfair Display',serif;color:var(--ink);letter-spacing:-.01em}
+.card h1 span{display:block;opacity:0}
+.card h1 em{font-style:italic;color:var(--accent)}
+.card .sub{margin-top:22px;font:600 40px 'Manrope',sans-serif;color:rgba(31,26,23,.72);opacity:0}
+.card .handle{margin-top:30px;display:inline-block;font:700 28px 'JetBrains Mono',monospace;letter-spacing:.06em;color:var(--cream);background:var(--ink);
+  border-radius:999px;padding:12px 26px;opacity:0}
+#hook{top:1010px;left:52px;right:170px}
+#end{top:1060px;left:60px;right:170px}
+#end h1{font-size:62px}
+
+#stamp{position:absolute;left:64px;top:330px;display:flex;align-items:center;gap:14px;background:var(--cream);color:var(--ink);
+  font:500 30px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;border-radius:999px;padding:14px 28px 14px 22px;opacity:0;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.5)}
+#stamp i{width:14px;height:14px;border-radius:50%;background:var(--accent)}
+#date{position:absolute;right:190px;top:338px;font:700 44px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#FF9A3C;opacity:0;
+  text-shadow:0 0 6px rgba(255,120,30,.9),0 0 18px rgba(255,90,20,.55)}
+#subs{position:absolute;left:60px;right:180px;top:1300px;display:flex;justify-content:center;text-align:center}
+#subT{display:inline;font:700 54px/1.42 'Manrope',sans-serif;color:var(--ink);background:var(--cream);padding:10px 26px;border-radius:22px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;letter-spacing:-.01em;opacity:0}
+#subT em{font:italic 900 60px/1 'Playfair Display',serif;color:var(--accent)}
+
+/* doodle boil: hand-drawn marker notes that wobble every 3 frames */
+#doodle{position:absolute;inset:0;width:1080px;height:1920px;overflow:visible}
+#doodle text{font-family:'Playfair Display',serif;font-style:italic;font-weight:900;paint-order:stroke;stroke:#FFF6E8;stroke-width:12px;stroke-linejoin:round;
+  filter:drop-shadow(0 4px 8px rgba(20,12,6,.35))}
+#doodle path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+#doodle path.u{stroke:#FFF6E8;filter:drop-shadow(0 3px 6px rgba(20,12,6,.35))}
+
+/* glass type: title on frosted glass over the footage */
+#glass{position:absolute;left:60px;right:60px;top:590px;padding:50px 56px 58px;border-radius:44px;opacity:0;
+  background:linear-gradient(135deg,rgba(255,250,242,.30),rgba(255,250,242,.12));border:2px solid rgba(255,255,255,.5);
+  backdrop-filter:blur(34px) saturate(1.4) brightness(.92);-webkit-backdrop-filter:blur(34px) saturate(1.4) brightness(.92);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.5)}
+#glass h1{font:900 100px/1.0 'Playfair Display',serif;color:#fff;letter-spacing:-.015em;text-shadow:0 2px 20px rgba(0,0,0,.22)}
+#glass h1 span{display:block;opacity:0}
+#glass h1 em{font-style:italic;color:#FFD2BE}
+
+/* checklist card */
+#check{top:990px;left:60px;right:170px}
+#check ul{list-style:none}
+#check li{display:flex;gap:24px;align-items:flex-start;margin-top:26px;opacity:0}
+#check .box{flex:none;width:62px;height:62px;border:4px solid var(--ink);border-radius:14px;position:relative;margin-top:2px}
+#check .box svg{position:absolute;left:-10px;top:-22px;width:84px;height:84px;overflow:visible}
+#check .box path{fill:none;stroke:var(--accent);stroke-width:10px;stroke-linecap:round;stroke-linejoin:round}
+#check b{display:block;font:800 50px/1.14 'Manrope',sans-serif;color:var(--ink);letter-spacing:-.01em}
+#check b em{font:italic 900 56px/1 'Playfair Display',serif;color:var(--accent)}
+#check small{display:block;margin-top:8px;font:600 34px/1.25 'Manrope',sans-serif;color:rgba(31,26,23,.62);opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="rig">
+    <img id="shot" alt="">
+    <div id="mast"><h2 id="mastH"></h2><div class="issue"><span id="mastL"></span><span id="mastR"></span></div></div>
+    <div class="orb" id="orbB"></div>
+    <canvas id="cut" width="1080" height="1920"></canvas>
+    <div class="orb" id="orbF"></div>
+  </div>
+  <div id="warm"></div>
+  <canvas id="grain" width="540" height="960"></canvas>
+  <div id="vig"></div>
+  <div id="flash"></div>
+  <div id="stamp"><i></i><span id="stampT"></span></div>
+  <div id="date"></div>
+  <div id="wall"></div>
+  <svg id="doodle" viewBox="0 0 1080 1920"></svg>
+  <div id="glass"><h1 id="glassH"></h1></div>
+  <div class="card" id="check"><div class="tag"><i></i><span id="checkT"></span></div><ul id="checkL"></ul></div>
+  <div id="subs"><span id="subT"></span></div>
+  <div class="card" id="hook"><div class="tag"><i></i><span id="hookTag"></span></div><h1 id="hookH"></h1></div>
+  <div class="card" id="end"><h1 id="endH"></h1><p class="sub" id="endSub"></p><div class="handle" id="endHandle"></div></div>
+</div>
+<script>
+// Generic reel page: everything comes from window.SPEC (spec.js, written by engine/build.py from reel.json)
+const S = window.SPEC, FPS = S.fps || 30, DUR = S.duration;
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const pr = (t, a, b) => clamp((t - a) / (b - a));
+const eOut = x => 1 - Math.pow(1 - x, 3);
+const eBack = x => { const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+if (S.colors) for (const [k, v] of Object.entries(S.colors)) document.documentElement.style.setProperty(`--${k}`, v);
+
+const SEGS = S.segments;                       // {id, dur, n, look, move, date, t0}
+const hook = S.hook, end = S.end;
+if (hook) {
+  $("hookTag").textContent = hook.tag || ""; if (!hook.tag) $("hook").querySelector(".tag").style.display = "none";
+  $("hookH").innerHTML = hook.lines.map(l => `<span>${l}</span>`).join("");
+  if (hook.size) $("hookH").style.fontSize = hook.size + "px";
+  if (hook.top) $("hook").style.top = hook.top + "px";
+}
+if (end) {
+  $("endH").innerHTML = end.lines.map(l => `<span>${l}</span>`).join("");
+  $("endSub").textContent = end.sub || ""; $("endHandle").textContent = end.handle || "";
+  if (!end.handle) $("endHandle").style.display = "none";
+  if (end.size) $("endH").style.fontSize = end.size + "px";
+}
+
+let curSrc = "";
+async function shot(t) {
+  const s = SEGS.find(s => t >= s.t0 && t < s.t0 + s.dur) || SEGS[SEGS.length - 1];
+  const lt = t - s.t0, p = pr(lt, 0, s.dur), n = Math.min(s.n, 1 + Math.floor(lt * FPS + 1e-6));
+  const src = `frames/${s.id}/${String(n).padStart(4, "0")}.jpg`, img = $("shot");
+  if (src !== curSrc) { img.src = src; curSrc = src; await img.decode().catch(() => {}); }
+  let scale = 1.0, ty = 0, rot = 0, blur = 0, filt = "saturate(1.06) contrast(1.04) sepia(.08) brightness(1.02)";
+  const move = s.move || "push";
+  if (move === "push") scale = 1.0 + 0.045 * p;
+  if (move === "tilt-up") { scale = 1.07; ty = 45 - 90 * p; }
+  if (move === "pull-out") scale = 1.08 - 0.08 * eOut(p);
+  if (s.look === "bw") filt = "grayscale(1) contrast(1.16) brightness(.94)";
+  if (s.look === "memory") {                   // zoom-through: each photo flies in, then drifts
+    filt = "saturate(.62) sepia(.22) contrast(1.06) brightness(1.03)";
+    scale = 1.16 - 0.14 * eOut(pr(lt, 0, 0.2)) + 0.04 * pr(lt, 0.2, s.dur);
+    blur = 6 * (1 - pr(lt, 0, 0.12));
+  }
+  (S.punch || []).forEach(([a, b], i) => {     // punch-ins on the words the sentence is about
+    if (t < a || t >= b) return;
+    const k = eOut(pr(t, a, a + 0.14));
+    scale *= 1 + 0.12 * k; rot = (i % 2 ? -0.8 : 0.8) * k;
+  });
+  $("date").style.opacity = s.date ? 1 : 0; $("date").textContent = s.date ? s.date.split(".").join(" ") : "";
+  if (s.look === "burst") {                    // grey -> colour bloom
+    const k = eOut(pr(lt, 0.25, 0.85));
+    filt = `grayscale(${1 - k}) saturate(${1.06 + 0.25 * k}) contrast(1.05) sepia(.08) brightness(1.03)`;
+    scale += 0.06 * (1 - eOut(pr(lt, 0, 0.5)));
+    blur = 14 * (1 - pr(lt, 0, 0.18));
+    $("flash").style.opacity = 0.14 * (1 - pr(lt, 0.25, 0.75)) * pr(lt, 0.2, 0.3);
+  } else $("flash").style.opacity = 0;
+  // transitions: "zoom" = the outgoing shot rushes in and the new one lands from a zoom; "whip" = fast blurred slide
+  let tx = 0;
+  const k = SEGS.indexOf(s), nx = SEGS[k + 1];
+  if (nx && nx.in && s.dur - lt < 0.2) {
+    const q = Math.pow(pr(lt, s.dur - 0.2, s.dur), 2);
+    if (nx.in === "zoom") { scale *= 1 + 1.3 * q; blur = Math.max(blur, 16 * q); }
+    if (nx.in === "whip") { scale *= 1 + 0.32 * q; tx = -150 * q; blur = Math.max(blur, 28 * q); }   // stays inside the scaled frame: no black edge
+  }
+  if (s.in && lt < 0.28) {
+    const q = 1 - eOut(pr(lt, 0, 0.28));
+    if (s.in === "zoom") { scale *= 1 + 0.55 * q; blur = Math.max(blur, 14 * q); }
+    if (s.in === "whip") { scale *= 1 + 0.32 * q; tx = 150 * q; blur = Math.max(blur, 28 * q); }
+  }
+  const f = filt + (blur > 0.3 ? ` blur(${blur}px)` : "");
+  img.style.filter = f;
+  RIG = { scale, ty, tx, rot, s, n, lt };
+  $("rig").style.transform = `translate(${tx}px,${ty}px) scale(${scale}) rotate(${rot}deg)`;
+  const cut = $("cut");                        // cut-out of her (Vision mask) for things that go behind her
+  if (s.cut && (S.cover || S.orbit)) {
+    const msrc = `frames/${s.id}_m/${String(n).padStart(4, "0")}.png`;
+    if (msrc !== curMask) { MASK.src = msrc; curMask = msrc; await MASK.decode().catch(() => {}); }
+    const cx = cut.getContext("2d");
+    cx.globalCompositeOperation = "copy"; cx.drawImage(img, 0, 0, 1080, 1920);
+    cx.globalCompositeOperation = "destination-in"; cx.drawImage(MASK, 0, 0, 1080, 1920);
+    cut.style.display = "block"; cut.style.filter = f;
+  } else cut.style.display = "none";
+}
+let RIG = null, curMask = ""; const MASK = new Image();
+
+function card(id, t, a, lines, out, rot0) {
+  const el = $(id), sp = el.querySelectorAll("h1 span");
+  const i = pr(t, a, a + 0.35), o = out ? pr(t, out, out + 0.25) : 0;
+  el.style.opacity = Math.min(i, 1 - o);
+  el.style.transform = `translateY(${(1 - eOut(i)) * 60 + o * 30}px) rotate(${rot0}deg) scale(${0.94 + 0.06 * eBack(i)})`;
+  sp.forEach((s, k) => { const at = lines[k] ?? lines[lines.length - 1]; const q = eOut(pr(t, at, at + 0.3)); s.style.opacity = q; s.style.transform = `translateY(${(1 - q) * 22}px)`; });
+}
+
+const NOSUBS = location.search.includes("nosubs");   // CapCut route: captions become CapCut text layers
+function subs(t) {
+  const el = $("subT"), cur = NOSUBS ? null : (S.subs || []).find(x => t >= x[0] && t < x[1]);
+  if (!cur) { el.style.opacity = 0; return; }
+  if (el.dataset.k !== String(cur[0])) { el.innerHTML = cur[2]; el.dataset.k = cur[0]; }
+  const i = eOut(pr(t, cur[0], cur[0] + 0.2)), o = pr(t, cur[1] - 0.12, cur[1]);
+  el.style.opacity = Math.min(i, 1 - o);
+  $("subs").style.transform = `translateY(${(1 - i) * 18}px)`;
+}
+
+function stamp(t) {
+  const cur = (S.stamps || []).find(x => t >= x[0] && t < x[1]), el = $("stamp");
+  if (!cur) { el.style.opacity = 0; return; }
+  $("stampT").textContent = cur[2];
+  const i = eOut(pr(t, cur[0], cur[0] + 0.22)), o = pr(t, cur[1] - 0.1, cur[1]);
+  el.style.opacity = Math.min(i, 1 - o);
+  el.style.transform = `translateX(${(1 - i) * -40}px)`;
+}
+
+// ---- doodle boil: {kind: text|circle|underline|strike|arrow, at, to, x, y, w, h, x2, y2, bend, n, text, size, rot, color, width}
+const NS = "http://www.w3.org/2000/svg", DG = $("doodle");
+const hash = (a, b) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); };
+const jit = (i, tick, k, amp) => (hash(i * 31 + k, tick) - 0.5) * 2 * amp;
+const ACC = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+function shape(d, i, tick) {                   // points of the stroke, re-wobbled every boil tick
+  const J = (k, a = 3) => jit(i, tick, k, a), P = [];
+  if (d.kind === "circle") {                   // loose loop, 1.12 turns
+    const cx = d.x + d.w / 2, cy = d.y + d.h / 2, n = 28;
+    for (let k = 0; k <= n; k++) {
+      const a = -2.2 + 2 * Math.PI * 1.12 * k / n, r = 1 + 0.05 * Math.sin(k * 1.7 + i);
+      P.push([cx + Math.cos(a) * d.w / 2 * r + J(k), cy + Math.sin(a) * d.h / 2 * r * (1 + 0.06 * k / n) + J(k + 50)]);
+    }
+  } else if (d.kind === "underline") {
+    for (let k = 0; k <= 8; k++) P.push([d.x + d.w * k / 8 + J(k, 2), d.y + Math.sin(k * 0.9 + i) * 6 + J(k + 9, 2.5)]);
+  } else if (d.kind === "strike") {            // zig-zag scribble over something
+    const n = d.n ?? 5; for (let k = 0; k <= n; k++) P.push([d.x + d.w * (k % 2 ? 0.94 : 0.04) + J(k, 8), d.y + d.h * k / n + J(k + 20, 4)]);
+  } else if (d.kind === "arrow") {
+    const dx = d.x2 - d.x, dy = d.y2 - d.y, L = Math.hypot(dx, dy), n = 10;
+    for (let k = 0; k <= n; k++) {
+      const q = k / n, bow = Math.sin(q * Math.PI) * (d.bend ?? 40);
+      P.push([d.x + dx * q - dy / L * bow + J(k, 2), d.y + dy * q + dx / L * bow + J(k + 30, 2)]);
+    }
+  }
+  return P;
+}
+function pathOf(P) {                           // Catmull-Rom through the points
+  const f = v => v.toFixed(1); let s = `M${f(P[0][0])},${f(P[0][1])}`;
+  for (let k = 0; k < P.length - 1; k++) {
+    const p0 = P[Math.max(0, k - 1)], p1 = P[k], p2 = P[k + 1], p3 = P[Math.min(P.length - 1, k + 2)];
+    s += ` C${f(p1[0] + (p2[0] - p0[0]) / 6)},${f(p1[1] + (p2[1] - p0[1]) / 6)} ${f(p2[0] - (p3[0] - p1[0]) / 6)},${f(p2[1] - (p3[1] - p1[1]) / 6)} ${f(p2[0])},${f(p2[1])}`;
+  }
+  return s;
+}
+const DOOD = (S.doodles || []).map(d => {
+  const g = document.createElementNS(NS, "g"), col = !d.color || d.color === "accent" ? ACC : d.color; DG.appendChild(g);
+  if (d.kind === "text") {
+    const tx = document.createElementNS(NS, "text"); tx.textContent = d.text; tx.setAttribute("fill", col);
+    tx.setAttribute("font-size", d.size || 80); g.appendChild(tx); return { d, g, tx, paths: [] };
+  }
+  const paths = (d.kind === "arrow" ? [0, 1] : [0]).map(() => {
+    const u = document.createElementNS(NS, "path"), p = document.createElementNS(NS, "path");
+    u.setAttribute("class", "u"); u.setAttribute("stroke-width", (d.width || 13) + 10); g.appendChild(u);
+    p.setAttribute("stroke", col); p.setAttribute("stroke-width", d.width || 13); g.appendChild(p); p.u = u; return p;
+  });
+  return { d, g, paths };
+});
+function doodles(t) {
+  const tick = Math.floor(t * FPS / 3 + 1e-6);
+  DOOD.forEach(({ d, g, tx, paths }, i) => {
+    const on = t >= d.at && t < d.to; g.style.display = on ? "" : "none"; if (!on) return;
+    const lt = t - d.at; g.setAttribute("opacity", (1 - pr(t, d.to - 0.15, d.to)).toFixed(3));
+    const dx = jit(i, tick, 90, 2.2), dy = jit(i, tick, 91, 2.2);
+    if (tx) {
+      const k = eBack(pr(lt, 0, 0.25)), rot = (d.rot || 0) + jit(i, tick, 92, 1.4), w = eOut(pr(lt, 0, d.write ?? 0.45));
+      tx.setAttribute("transform", `translate(${d.x + dx},${d.y + dy}) rotate(${rot}) scale(${0.88 + 0.12 * k})`);
+      tx.style.clipPath = `inset(-40% ${(100 - 104 * w).toFixed(1)}% -40% -10%)`;   // written on left to right
+      return;
+    }
+    const P = shape(d, i, tick), q = eOut(pr(lt, 0, d.draw ?? 0.35));
+    paths[0].setAttribute("d", pathOf(P));
+    const L = paths[0].getTotalLength(); paths[0].style.strokeDasharray = `${L} ${L}`; paths[0].style.strokeDashoffset = L * (1 - q);
+    if (paths[1]) {                            // arrow head once the shaft is drawn
+      const a = P[P.length - 2], b = P[P.length - 1], ang = Math.atan2(b[1] - a[1], b[0] - a[0]), h = 36;
+      paths[1].setAttribute("d", `M${b[0] - h * Math.cos(ang - 0.5)},${b[1] - h * Math.sin(ang - 0.5)} L${b[0]},${b[1]} L${b[0] - h * Math.cos(ang + 0.5)},${b[1] - h * Math.sin(ang + 0.5)}`);
+      paths[1].setAttribute("opacity", q > 0.95 ? 1 : 0);
+    }
+    g.setAttribute("transform", `translate(${dx},${dy})`);
+    for (const p of paths) for (const a of ["d", "opacity"]) { const v = p.getAttribute(a); if (v != null) p.u.setAttribute(a, v); }
+    for (const p of paths) { p.u.style.strokeDasharray = p.style.strokeDasharray; p.u.style.strokeDashoffset = p.style.strokeDashoffset; }
+  });
+}
+
+// ---- glass type: {from, to, lines, at}
+const GL = S.glass;
+if (GL) $("glassH").innerHTML = GL.lines.map(l => `<span>${l}</span>`).join("");
+if (GL && GL.top) $("glass").style.top = GL.top + "px";
+function glass(t) {
+  if (!GL) return;
+  const el = $("glass"), i = eOut(pr(t, GL.from, GL.from + 0.35)), o = pr(t, GL.to - 0.25, GL.to);
+  el.style.opacity = Math.min(i, 1 - o);
+  el.style.transform = `translateY(${(1 - i) * 40}px) scale(${0.96 + 0.04 * i})`;
+  el.querySelectorAll("span").forEach((s, k) => {
+    const at = (GL.at || [])[k] ?? GL.from + 0.1, q = eOut(pr(t, at, at + 0.35));
+    s.style.opacity = q; s.style.filter = q < 0.99 ? `blur(${(1 - q) * 10}px)` : ""; s.style.transform = `translateY(${(1 - q) * 18}px)`;
+  });
+}
+
+// ---- checklist: {from, to, title, items: [{text, sub, at, sub_at}]}
+const CK = S.checklist;
+if (CK) {
+  $("checkT").textContent = CK.title || ""; if (!CK.title) $("check").querySelector(".tag").style.display = "none";
+  $("checkL").innerHTML = CK.items.map(it => `<li><span class="box"><svg viewBox="0 0 84 84"><path d="M14,46 L34,64 L74,10"/></svg></span>` +
+    `<span><b>${it.text}</b>${it.sub ? `<small>${it.sub}</small>` : ""}</span></li>`).join("");
+  if (CK.top) $("check").style.top = CK.top + "px";
+}
+function checklist(t) {
+  if (!CK) return;
+  const el = $("check"), i = pr(t, CK.from, CK.from + 0.35), o = pr(t, CK.to - 0.25, CK.to);
+  el.style.opacity = Math.min(i, 1 - o);
+  el.style.transform = `translateY(${(1 - eOut(i)) * 60 + o * 30}px) rotate(-1deg) scale(${0.94 + 0.06 * eBack(i)})`;
+  el.querySelectorAll("li").forEach((li, k) => {
+    const it = CK.items[k], q = eOut(pr(t, it.at - 0.3, it.at)), c = eOut(pr(t, it.at, it.at + 0.3));
+    li.style.display = t >= it.at - 0.3 ? "" : "none";       // the card grows item by item instead of standing half-empty
+    li.style.opacity = q; li.style.transform = `translateX(${(1 - q) * -30}px)`;
+    const p = li.querySelector("path"); p.style.strokeDasharray = 100; p.style.strokeDashoffset = 100 * (1 - c);
+    const sm = li.querySelector("small"); if (sm) sm.style.opacity = it.sub_at != null ? eOut(pr(t, it.sub_at, it.sub_at + 0.3)) : q;
+  });
+}
+
+// ---- cover story: {from, to, title, left, right}; segments with "cut": true put her in front of the masthead
+const CV = S.cover;
+if (CV) {
+  $("mastH").innerHTML = [...CV.title].map(c => `<span>${c === " " ? "&nbsp;" : c}</span>`).join("");
+  $("mastL").textContent = CV.left || ""; $("mastR").textContent = CV.right || "";
+  if (CV.top) $("mast").style.top = CV.top + "px";
+  if (CV.color) { $("mastH").style.color = CV.color; const is = $("mast").querySelector(".issue"); is.style.color = CV.color; is.style.borderTopColor = CV.color; is.style.textShadow = "none"; $("mastH").style.textShadow = "none"; }
+}
+const mastReady = document.fonts.ready.then(() => {            // fit the masthead to the column
+  if (CV) { const h = $("mastH"); h.style.fontSize = Math.min(230, 200 * 968 / h.scrollWidth) + "px"; }
+});
+function cover(t) {
+  const el = $("mast"); if (!CV) return;
+  const on = t >= CV.from && t < CV.to; el.style.opacity = on ? 1 - pr(t, CV.to - 0.2, CV.to) : 0; if (!on) return;
+  [...$("mastH").children].forEach((c, i) => {
+    const q = pr(t, CV.from + i * 0.05, CV.from + 0.32 + i * 0.05);
+    c.style.transform = `translateY(${(1 - eBack(q)) * -150}px)`; c.style.opacity = clamp(q * 2);
+  });
+  el.querySelector(".issue").style.opacity = eOut(pr(t, CV.from + 0.4, CV.from + 0.7));
+}
+
+// ---- orbit: {from, to, seg, text, speed, scale, tilt, lift}; letters circle her head, the back half behind her
+const OB = S.orbit, OL = []; let OTOTAL = 1;
+function headAt(seg, n) {                      // smoothed [top, cx, width] of her head from the mask meta
+  const H = seg.head || [], acc = [0, 0, 0]; let c = 0;
+  for (let j = n - 4; j <= n + 2; j++) { const h = H[j - 1]; if (h) { acc[0] += h[0]; acc[1] += h[1]; acc[2] += h[2]; c++; } }
+  return c ? acc.map(v => v / c) : null;
+}
+const orbReady = document.fonts.ready.then(() => {
+  if (!OB) return;
+  const seg = SEGS.find(x => x.id === OB.seg), ws = (seg.head || []).filter(Boolean).map(h => h[2]).sort((a, b) => a - b);
+  const rx = Math.max(240, (ws[ws.length >> 1] || 400) * (OB.scale || 0.95));
+  const probe = document.createElement("span"); probe.textContent = OB.text; $("orbF").appendChild(probe);
+  const reps = Math.max(1, Math.round(2 * Math.PI * rx * 0.92 / probe.offsetWidth)); probe.remove();
+  let c = 0;
+  for (const ch of OB.text.repeat(reps)) {
+    const el = document.createElement("span"); el.textContent = ch; $("orbF").appendChild(el);
+    const w = el.offsetWidth, h = el.offsetHeight; OL.push({ el, w, h, c: c + w / 2, front: true }); c += w;
+  }
+  OTOTAL = c;
+});
+function orbit(t) {
+  if (!OB || !RIG) return;
+  const on = RIG.s.id === OB.seg && t >= OB.from && t < OB.to;
+  $("orbB").style.display = $("orbF").style.display = on ? "" : "none"; if (!on) return;
+  const H = headAt(RIG.s, RIG.n); if (!H) return;
+  const [top, hx, hw] = H, rx = Math.max(240, hw * (OB.scale || 0.95)), ry = rx * (OB.tilt || 0.2), cy = top + hw * (OB.lift ?? 0.45);
+  const phi = (t - OB.from) * (OB.speed || 1.5), fade = pr(t, OB.from, OB.from + 0.4) * (1 - pr(t, OB.to - 0.2, OB.to));
+  OL.forEach(L => {
+    const th = Math.PI / 2 + phi - L.c / OTOTAL * 2 * Math.PI + 0.9, z = Math.sin(th), front = z > 0;
+    if (front !== L.front) { (front ? $("orbF") : $("orbB")).appendChild(L.el); L.front = front; }
+    const x = hx + rx * Math.cos(th), y = cy + ry * z, sx = Math.sign(z || 1) * Math.max(0.15, Math.abs(z)), sc = 0.8 + 0.28 * (z + 1) / 2;
+    L.el.style.transform = `translate(${(x - L.w / 2).toFixed(1)}px,${(y - L.h / 2).toFixed(1)}px) scale(${(sx * sc).toFixed(3)},${sc.toFixed(3)})`;
+    L.el.style.opacity = (fade * (front ? 1 : 0.8)).toFixed(3);
+  });
+}
+
+// ---- headline wall: {from, to, items, every}; file-name tiles pile up
+const WL = S.wall, WT = [];
+if (WL) {
+  let sd = 11; const r = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  const rows = Math.ceil(WL.items.length / 2);
+  WL.items.forEach((it, i) => {
+    const el = document.createElement("div"); el.className = "tile"; el.innerHTML = `<i></i>${it}`; $("wall").appendChild(el);
+    WT.push({ el, x: 40 + (i % 2) * 450 + (r() - 0.5) * 70, y: 300 + Math.floor(i / 2) * (1180 / rows) + (r() - 0.5) * 40, rot: (r() - 0.5) * 16 });
+  });
+}
+function wall(t) {
+  if (!WL) return;
+  const o = pr(t, WL.to - 0.2, WL.to);
+  WT.forEach((T, i) => {
+    const a = WL.from + i * (WL.every || 0.07), q = pr(t, a, a + 0.22);
+    T.el.style.opacity = t >= a && t < WL.to ? (clamp(q * 3) * (1 - o)).toFixed(3) : 0;
+    T.el.style.transform = `translate(${T.x}px,${T.y}px) rotate(${T.rot}deg) scale(${0.5 + 0.5 * eBack(q)})`;
+  });
+}
+
+const G = $("grain"), gx = G.getContext("2d"), NOISE = [];
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;   // deterministic grain
+for (let k = 0; k < 6; k++) {
+  const d = gx.createImageData(540, 960);
+  for (let q = 0; q < d.data.length; q += 4) { const v = rnd() * 255; d.data[q] = d.data[q + 1] = d.data[q + 2] = v; d.data[q + 3] = 255; }
+  NOISE.push(d);
+}
+
+async function render(t) {
+  await shot(t);
+  if (hook) card("hook", t, hook.at ? hook.at[0] - 0.15 : -1, hook.at || hook.lines.map(() => -1), hook.out, -1.6);
+  if (end) {
+    card("end", t, end.from, end.lines_at || end.lines.map(() => end.from + 0.12), null, 1.2);
+    $("endSub").style.opacity = end.sub_at != null ? eOut(pr(t, end.sub_at, end.sub_at + 0.3)) : 0;
+    $("endHandle").style.opacity = end.handle_at != null ? eOut(pr(t, end.handle_at, end.handle_at + 0.3)) : 0;
+  }
+  subs(t);
+  stamp(t);
+  cover(t);
+  orbit(t);
+  wall(t);
+  doodles(t);
+  glass(t);
+  checklist(t);
+  gx.putImageData(NOISE[Math.floor(t * FPS) % NOISE.length], 0, 0);
+}
+window.DUR = DUR; window.render = render; window.ready = Promise.all([document.fonts.ready, orbReady, mastReady]);
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# reelsmith — one entry point for the reel engine, so skills never need to know where the repo lives.
+set -euo pipefail
+
+SELF="$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "${BASH_SOURCE[0]}")"
+ROOT="$(cd "$(dirname "$SELF")/.." && pwd)"
+DATA="${REELSMITH_DATA:-$HOME/.local/share/reelsmith}"   # venv + tools live here (the plugin folder is replaced on updates)
+PY="$DATA/venv/bin/python"
+export REELSMITH_DATA="$DATA"
+
+need_py() { [ -x "$PY" ] || { echo "reelsmith: not set up yet, run: reelsmith setup" >&2; exit 1; }; }
+
+usage() {
+  cat <<EOF
+reelsmith — reels from your own footage (Claude Code plugin)
+
+  reelsmith setup                     install dependencies (venv, Playwright Chromium, mask tool)
+  reelsmith doctor                    check that everything is in place
+  reelsmith new <reel-dir>            start a reel folder from the template
+  reelsmith sheet <clip>... [-o dir]  contact sheets (10 frames per clip) to pick moments
+  reelsmith voice <reel-dir> [n]      pull the n newest ElevenLabs takes into <reel-dir>/vo/
+  reelsmith build <reel-dir> [--stills] [--capcut]
+                                      render the reel (--stills = fast preview + safe-zone QA sheet)
+  reelsmith stills <reel-dir> <t1,t2,...>
+                                      render single frames at those times into <reel-dir>/stills/
+  reelsmith capcut stems|draft <reel-dir>
+                                      stems + CapCut draft JSON with sound effects (see docs/capcut.md)
+  reelsmith masks <frames-dir> <out-dir>
+                                      macOS Vision person masks (alpha PNG) + head positions
+  reelsmith th <lines|tighten|cut|qa|clean|transcribe|render> [args]
+                                      talking-head tools (skills/talking-head-edit)
+  reelsmith root | py | data          print the repo root / the venv python / the data folder
+EOF
+}
+
+cmd="${1:-help}"; shift || true
+case "$cmd" in
+  root) echo "$ROOT" ;;
+  py) echo "$PY" ;;
+  data) echo "$DATA" ;;
+  setup) bash "$ROOT/install.sh" "$@" ;;
+  doctor) bash "$ROOT/install.sh" --check ;;
+  new)
+    dir="${1:?usage: reelsmith new <reel-dir>}"
+    mkdir -p "$dir/src" "$dir/vo"
+    [ -e "$dir/reel.json" ] || cp "$ROOT/examples/template/reel.json" "$dir/reel.json"
+    echo "created $dir (put clips in $dir/src, voice in $dir/vo/vo.mp3, edit $dir/reel.json)" ;;
+  sheet) need_py; "$PY" "$ROOT/tools/contact_sheet.py" "$@" ;;
+  voice) need_py; "$PY" "$ROOT/engine/pull_vo.py" "$@" ;;
+  build) need_py; "$PY" "$ROOT/engine/build.py" "$@" ;;
+  stills)
+    dir="$(cd "${1:?reel dir}" && pwd)"; mkdir -p "$dir/stills"
+    W=1080 H=1920 node "$ROOT/tools/render.mjs" "$dir" stills "${2:?times like 0.5,3.2}" ;;
+  capcut) need_py; sub="${1:?stems|draft}"; dir="${2:?reel dir}"; "$PY" "$ROOT/engine/capcut.py" "$dir" "$sub" ;;
+  masks)
+    tool="$DATA/bin/masks"
+    if [ ! -x "$tool" ] || [ "$ROOT/tools/masks.swift" -nt "$tool" ]; then
+      mkdir -p "$DATA/bin"; swiftc -O "$ROOT/tools/masks.swift" -o "$tool"
+    fi
+    "$tool" "$@" ;;
+  th)
+    need_py; sub="${1:?lines|tighten|cut|qa|clean|transcribe|render}"; shift
+    TH="$ROOT/skills/talking-head-edit"
+    case "$sub" in
+      lines|tighten|cut|qa) "$PY" "$TH/prep/$sub.py" "$@" ;;
+      clean) bash "$TH/prep/clean_audio.sh" "$@" ;;
+      transcribe) "$PY" -I "$TH/engine/transcribe.py" "$@" ;;
+      render) node "$TH/engine/render.mjs" "$@" ;;
+      *) echo "unknown: $sub" >&2; exit 1 ;;
+    esac ;;
+  help|-h|--help) usage ;;
+  *) echo "unknown command: $cmd" >&2; usage; exit 1 ;;
+esac

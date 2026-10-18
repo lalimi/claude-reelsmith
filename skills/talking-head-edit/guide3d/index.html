@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --ground:#F4EFE6; --main:#FF5A1F; --ink:#0A0A0A; --accent:#FFD93D; }
+  html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:var(--ground); font-family:"Inter", sans-serif; }
+  #c { position:absolute; inset:0; width:1080px; height:1920px; }
+  .grid { position:absolute; inset:0; background-image:radial-gradient(circle, rgba(10,10,10,.13) 2.2px, transparent 2.8px); background-size:64px 64px; background-position:32px 32px; }
+  .cap { position:absolute; left:90px; width:900px; text-align:center; color:var(--ink); margin:0; }
+  .t1 { top:300px; font-size:84px; font-weight:800; letter-spacing:-.035em; line-height:1.05; }
+  .t2 { top:300px; font-size:74px; font-weight:700; letter-spacing:-.02em; }
+  .end { top:1330px; display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .end .a { font-size:88px; font-weight:800; letter-spacing:-.035em; line-height:1.05; }
+  .box { background:var(--ink); color:var(--ground); text-transform:uppercase; font-size:92px; font-weight:800; padding:18px 36px 22px; border-radius:18px; box-shadow:0 10px 0 rgba(10,10,10,.12), 0 22px 40px rgba(0,0,0,.18); }
+  .url { position:relative; font-size:60px; font-weight:700; margin-top:20px; }
+  .url i { position:absolute; left:0; right:0; bottom:-8px; height:12px; border-radius:6px; background:var(--accent); transform-origin:0 50%; z-index:-1; }
+  .w { display:inline-block; }
+</style>
+</head>
+<body>
+<div class="grid"></div>
+<canvas id="c" width="1080" height="1920"></canvas>
+<p class="cap t1" id="t1">Your guide</p>
+<div class="cap end" id="end">
+  <div class="a" id="ea">Sell your guide</div>
+  <div class="box" id="eb">this week</div>
+  <div class="url" id="eu">acme.example<i id="ul"></i></div>
+</div>
+<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js" } }</script>
+<script type="module">
+import * as THREE from 'three';
+await document.fonts.load('800 100px Inter');
+await document.fonts.load('700 100px Inter');
+await document.fonts.load('500 100px Inter');
+
+const W = 1080, H = 1920;
+// Brand colours (keep in sync with :root above). Texts: cover(), sticker, button labels and the .end block.
+const C = { ground:'#F4EFE6', main:'#FF5A1F', ink:'#0A0A0A', accent:'#FFD93D', deep:'#B83A0E' };
+
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const seg = (t, a, b) => clamp01((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+const eo = x => 1 - Math.pow(1 - x, 3);
+const ei = x => x * x * x;
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eob = (x, s = 1.7) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+const bounce = x => { const n = 7.5625, d = 2.75; if (x < 1 / d) return n * x * x; if (x < 2 / d) return n * (x -= 1.5 / d) * x + .75; if (x < 2.5 / d) return n * (x -= 2.25 / d) * x + .9375; return n * (x -= 2.625 / d) * x + .984375; };
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NoToneMapping;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xe8dfcf, 1.9));
+const key = new THREE.DirectionalLight(0xffffff, 1.5);
+key.position.set(3, 6, 5);
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = -3; key.shadow.camera.right = 3; key.shadow.camera.top = 3; key.shadow.camera.bottom = -3;
+key.shadow.radius = 8;
+key.shadow.bias = -0.0005;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffe0d2, 0.9);
+rim.position.set(-4, 2, -3);
+scene.add(rim);
+
+
+function canvasTex(w, h, draw) {
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  draw(cv.getContext('2d'), w, h);
+  const tx = new THREE.CanvasTexture(cv);
+  tx.colorSpace = THREE.SRGBColorSpace;
+  tx.anisotropy = 8;
+  return tx;
+}
+
+function wrapLines(g, text, x, y, maxW, lh) {
+  const words = text.split(' ');
+  let line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (g.measureText(test).width > maxW && line) { g.fillText(line, x, y); y += lh; line = w; } else line = test;
+  }
+  g.fillText(line, x, y);
+}
+
+const cover = canvasTex(1024, 1462, (g, w, h) => {
+  g.fillStyle = C.main; g.fillRect(0, 0, w, h);
+  g.fillStyle = C.deep; g.fillRect(0, 0, 46, h);
+  g.globalAlpha = 0.18; g.fillStyle = C.ink;
+  for (let i = 0; i < 9; i++) { g.save(); g.translate(760, 1120); g.rotate(i * Math.PI * 2 / 9); g.beginPath(); g.roundRect(-34, -330, 68, 300, 34); g.fill(); g.restore(); }
+  g.beginPath(); g.arc(760, 1120, 70, 0, Math.PI * 2); g.fill();
+  g.globalAlpha = 1;
+  g.fillStyle = C.ink;
+  g.font = '700 46px Inter';
+  g.fillText('GUIDE', 120, 170);
+  g.fillRect(120, 196, 92, 8);
+  g.font = '800 128px Inter';
+  wrapLines(g, 'First sales in 30 days', 116, 400, 820, 132);
+  g.font = '500 44px Inter';
+  g.fillText('step-by-step plan · 42 pages', 120, 1340);
+});
+
+const pages = canvasTex(256, 1462, (g, w, h) => {
+  g.fillStyle = '#FBF8F2'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(10,10,10,.08)'; g.lineWidth = 2;
+  for (let x = 6; x < w; x += 9) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+});
+const pagesTop = canvasTex(1024, 128, (g, w, h) => {
+  g.fillStyle = '#FBF8F2'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(10,10,10,.08)'; g.lineWidth = 2;
+  for (let y = 6; y < h; y += 9) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+});
+const back = canvasTex(512, 731, (g, w, h) => { g.fillStyle = C.deep; g.fillRect(0, 0, w, h); });
+
+const blob = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.0), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, map: canvasTex(512, 200, (g, w, h) => {
+  g.scale(w / h, 1);
+  const gr = g.createRadialGradient(h / 2, h / 2, 0, h / 2, h / 2, h / 2);
+  gr.addColorStop(0, 'rgba(60,45,25,.42)'); gr.addColorStop(0.55, 'rgba(60,45,25,.14)'); gr.addColorStop(1, 'rgba(60,45,25,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, h, h);
+}) }));
+blob.rotation.x = -Math.PI / 2;
+scene.add(blob);
+
+const std = (o) => new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.55, metalness: 0 }, o));
+const BW = 1.4, BH = 2.0, BD = 0.18;
+const bookGeo = new THREE.BoxGeometry(BW, BH, BD, 1, 1, 1);
+const book = new THREE.Mesh(bookGeo, [
+  std({ map: pages, roughness: 0.8 }),
+  std({ color: C.deep }),
+  std({ map: pagesTop, roughness: 0.8 }),
+  std({ map: pagesTop, roughness: 0.8 }),
+  std({ map: cover, roughness: 0.42 }),
+  std({ map: back }),
+]);
+const bookPivot = new THREE.Group();
+bookPivot.add(book);
+scene.add(bookPivot);
+
+const sticker = new THREE.Mesh(new THREE.CircleGeometry(0.34, 64), std({ map: canvasTex(512, 512, (g, w, h) => {
+  g.fillStyle = C.accent; g.beginPath(); g.arc(256, 256, 256, 0, Math.PI * 2); g.fill();
+  g.fillStyle = C.ink; g.textAlign = 'center';
+  g.font = '800 150px Inter'; g.fillText('19', 256, 262);
+  g.font = '700 74px Inter'; g.fillText('USD', 256, 352);
+}), roughness: 0.35 }));
+sticker.position.set(0.5, 0.72, BD / 2 + 0.006);
+book.add(sticker);
+
+const btn = new THREE.Group();
+const btnBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, 1.1, 8, 32).rotateZ(Math.PI / 2), std({ color: C.ink, roughness: 0.35 }));
+btnBody.scale.z = 0.5;
+btn.add(btnBody);
+const btnLabel = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.4), new THREE.MeshBasicMaterial({ transparent: true, map: canvasTex(1024, 292, (g, w, h) => {
+  g.fillStyle = C.ground; g.textAlign = 'center'; g.font = '800 150px Inter'; g.fillText('Buy now', w / 2, 196);
+}) }));
+btnLabel.position.z = 0.135;
+btn.add(btnLabel);
+const btnLabel2 = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.4), new THREE.MeshBasicMaterial({ transparent: true, map: canvasTex(1024, 292, (g, w, h) => {
+  g.fillStyle = C.main; g.textAlign = 'center'; g.font = '800 150px Inter'; g.fillText('+1 sale', w / 2, 196);
+}) }));
+btnLabel2.position.z = 0.136;
+btn.add(btnLabel2);
+scene.add(btn);
+
+const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.025, 12, 96), new THREE.MeshBasicMaterial({ color: C.main, transparent: true }));
+scene.add(ring);
+
+const burst = new THREE.Group();
+for (let i = 0; i < 9; i++) {
+  const r = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.22, 4, 12), new THREE.MeshBasicMaterial({ color: i % 3 === 0 ? C.accent : C.main, transparent: true }));
+  r.userData.a = i * Math.PI * 2 / 9 + 0.2;
+  burst.add(r);
+}
+scene.add(burst);
+
+const el = id => document.getElementById(id);
+const dom = { t1: el('t1'), end: el('end'), ea: el('ea'), eb: el('eb'), eu: el('eu'), ul: el('ul') };
+function splitWords(node) {
+  const ws = node.textContent.split(' ');
+  node.textContent = '';
+  return ws.map((w, i) => { const s = document.createElement('span'); s.className = 'w'; s.textContent = w; node.append(s); if (i < ws.length - 1) node.append(' '); return s; });
+}
+const w1 = splitWords(dom.t1), wa = splitWords(dom.ea), wb = splitWords(dom.eb);
+function say(words, t, t0, per = 0.16, dx = 26) {
+  words.forEach((s, i) => { const p = eo(seg(t, t0 + i * per, t0 + i * per + 0.45)); s.style.opacity = p; s.style.transform = `translateX(${lerp(dx, 0, p)}px)`; });
+}
+
+window.DURATION = 10;
+window.renderAt = function (t) {
+  const fall = seg(t, -0.15, 1.15);
+  const land = bounce(fall);
+  let y = lerp(2.3, 0, land);
+  const squash = t > 0.95 && t < 1.6 ? Math.sin(seg(t, 0.95, 1.6) * Math.PI) * Math.exp(-seg(t, 0.95, 1.6) * 2.5) : 0;
+  const float = Math.sin((t - 1.4) * 1.6) * 0.05 * seg(t, 1.4, 2.2);
+  const spinIn = lerp(-Math.PI * 2.2, 0, eo(seg(t, 0, 1.3)));
+  let ry = spinIn + lerp(0.42, -0.38, eio(seg(t, 1.3, 4.6)));
+  let rx = lerp(-0.5, -0.06, eo(seg(t, 0, 1.3)));
+  let rz = lerp(0.25, 0.04, eo(seg(t, 0, 1.3)));
+  let x = 0;
+  let s = 1;
+
+  const lift = eio(seg(t, 4.5, 5.4));
+  y += lerp(0, 0.55, lift);
+  ry = lerp(ry, -0.18, lift);
+  rx = lerp(rx, 0.12, lift);
+  s = lerp(1, 0.86, lift);
+
+  const press = seg(t, 5.75, 6.15);
+  const pop = t > 6.05 ? eob(seg(t, 6.05, 6.5), 2.2) : 0;
+  const settle = eio(seg(t, 7.1, 7.9));
+  y = lerp(y, 0.95, settle);
+  s = lerp(s, 0.74, settle) * (1 + 0.04 * Math.sin(seg(t, 6.05, 6.6) * Math.PI));
+  ry = lerp(ry, 0.32 + (t - 7.8) * 0.05 * (t > 7.8), settle);
+  rz = lerp(rz, -0.05, settle);
+
+  bookPivot.position.set(x, y + float, 0);
+  bookPivot.rotation.set(rx, ry, rz);
+  bookPivot.scale.set(s * (1 + squash * 0.06), s * (1 - squash * 0.1), s * (1 + squash * 0.06));
+
+  const sp = seg(t, 2.3, 2.75);
+  sticker.scale.setScalar(sp > 0 ? Math.max(0.0001, eob(sp, 2.2)) : 0.0001);
+  sticker.rotation.z = lerp(-1.2, -0.18, eo(sp));
+
+  const bIn = seg(t, 4.8, 5.4);
+  const bOut = seg(t, 7.0, 7.4);
+  const bpress = Math.sin(press * Math.PI);
+  btn.position.set(0, lerp(-2.6, -1.0, eob(bIn, 1.5)) - bpress * 0.05 - ei(bOut) * 2.4, 0.3);
+  btn.scale.set(1 - bpress * 0.06, 1 - bpress * 0.12, 1);
+  btn.rotation.x = lerp(-0.6, -0.1, eo(bIn));
+  btn.visible = bIn > 0 && bOut < 1;
+  const sw = seg(t, 6.05, 6.3);
+  btnLabel.material.opacity = 1 - sw;
+  btnLabel2.material.opacity = sw;
+  btnLabel2.scale.setScalar(sw > 0 ? lerp(0.7, 1, eob(sw, 2)) : 0.0001);
+
+  const rp = seg(t, 6.05, 6.8);
+  ring.position.set(0, -1.0, 0.25);
+  ring.scale.setScalar(lerp(0.3, 1.6, eo(rp)));
+  ring.material.opacity = rp > 0 && rp < 1 ? 1 - rp : 0;
+  ring.visible = rp > 0 && rp < 1;
+
+  burst.position.set(0, -1.0, 0.4);
+  const bp = seg(t, 6.05, 6.75);
+  burst.visible = bp > 0 && bp < 1;
+  burst.children.forEach(r => {
+    const d = lerp(0.6, 1.35, eo(bp));
+    r.position.set(Math.cos(r.userData.a) * d, Math.sin(r.userData.a) * d, 0);
+    r.rotation.z = r.userData.a - Math.PI / 2;
+    r.material.opacity = 1 - ei(bp);
+    r.scale.setScalar(lerp(1, 0.4, bp));
+  });
+
+  const camZ = lerp(7.6, 6.9, eio(seg(t, 1.2, 4.6)));
+  const camY = lerp(0.5, 0.15, eio(seg(t, 1.2, 4.6)));
+  camera.position.set(Math.sin(t * 0.12) * 0.25, camY, camZ);
+  camera.lookAt(0, lerp(0.1, 0.25, settle), 0);
+
+  const gy = -1.2;
+  blob.position.set(bookPivot.position.x, gy, 0.1);
+  const hgt = Math.max(0, bookPivot.position.y - gy - 1.0);
+  const bs = lerp(1.05, 0.55, clamp01(hgt / 2.4)) * bookPivot.scale.x;
+  blob.scale.set(bs, bs, 1);
+  blob.material.opacity = lerp(1, 0.35, clamp01(hgt / 2.4)) * (1 - seg(t, 4.6, 5.3) * 0.6);
+  renderer.render(scene, camera);
+
+  const out1 = ei(seg(t, 4.4, 4.7));
+  say(w1, t, 1.45, 0.18);
+  dom.t1.style.opacity = 1 - out1;
+  dom.t1.style.transform = `translateX(${-out1 * 30}px)`;
+
+
+  say(wa, t, 7.5, 0.2);
+  say(wb, t, 8.0, 0.2);
+  const ebp = seg(t, 7.95, 8.35);
+  dom.eb.style.opacity = eo(ebp);
+  dom.eb.style.transform = `scale(${lerp(0.85, 1, eob(ebp, 1.7))})`;
+  const up = eo(seg(t, 8.45, 8.8));
+  dom.eu.style.opacity = up;
+  dom.eu.style.transform = `translateY(${lerp(18, 0, up)}px)`;
+  dom.ul.style.transform = `scaleX(${eio(seg(t, 8.7, 9.1))})`;
+  dom.end.style.transform = `translateY(${-Math.max(0, t - 7.5) * 4}px)`;
+};
+
+window.renderAt(0);
+window.READY = true;
+</script>
+</body>
+</html>
