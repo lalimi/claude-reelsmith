@@ -1,7 +1,11 @@
 {
   "name": "lalimi",
   "description": "Claude Code plugins by lalimi",
-  "owner": { "name": "lalimi", "url": "https://github.com/lalimi" },
+  "owner": {
+    "name": "lalimi",
+    "url": "https://github.com/lalimi",
+    "email": "lali@blacksea.in.ua"
+  },
   "plugins": [
     {
       "name": "reelsmith",

@@ -2,9 +2,23 @@
   "name": "reelsmith",
   "version": "0.1.0",
   "description": "Reels and TikToks from your own footage: script, voice, montage with motion effects, sound, cover and caption. Skills + a render engine + CapCut connector.",
-  "author": { "name": "lalimi", "url": "https://github.com/lalimi" },
+  "author": {
+    "name": "lalimi",
+    "url": "https://github.com/lalimi",
+    "email": "lali@blacksea.in.ua"
+  },
   "homepage": "https://github.com/lalimi/claude-reelsmith",
   "repository": "https://github.com/lalimi/claude-reelsmith",
   "license": "MIT",
-  "keywords": ["reels", "tiktok", "shorts", "video", "editing", "motion-graphics", "capcut", "elevenlabs", "content-creator"]
+  "keywords": [
+    "reels",
+    "tiktok",
+    "shorts",
+    "video",
+    "editing",
+    "motion-graphics",
+    "capcut",
+    "elevenlabs",
+    "content-creator"
+  ]
 }

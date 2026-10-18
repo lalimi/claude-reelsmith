@@ -92,7 +92,7 @@ This is free and open source, built in Ukraine 🇺🇦 by an indie founder. If 
   <sub>Scan with your phone camera or tap — any Visa / Mastercard, Apple Pay, Google Pay.</sub>
 </p>
 
-Built by **Lalita** ([@lali.mi](https://instagram.com/lali.mi)), founder of [BlackSea](https://blacksea.in.ua) — a marketplace for Ukrainian creators of digital products.
+Built by **Lalita** ([@lali.mi](https://instagram.com/lali.mi)), founder of [BlackSea](https://blacksea.in.ua) — a marketplace for Ukrainian creators of digital products. Questions, ideas, collaborations: [lali@blacksea.in.ua](mailto:lali@blacksea.in.ua).
 
 ## Credits & license
 MIT — see [LICENSE](LICENSE). Talking-head prep scripts adapted from [nicolapocock/claude-reel-editor](https://github.com/nicolapocock/claude-reel-editor) (MIT). Fonts under SIL OFL 1.1. Full list: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
