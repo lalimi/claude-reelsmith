@@ -86,7 +86,11 @@ Your footage, voice and renders stay on your machine (`.gitignore` excludes `src
 
 This is free and open source, built in Ukraine 🇺🇦 by an indie founder. If it saved you a few hours of editing, you can buy me a coffee:
 
-**[☕ Donate via monobank jar](DONATE_URL)** — works with any Visa / Mastercard, Apple Pay and Google Pay.
+<p align="center">
+  <a href="https://base.monobank.ua/d/9J99rx8GNQAWMh/"><img src="https://img.shields.io/badge/%E2%98%95%20Donate-monobank-000000?style=for-the-badge" alt="Donate via monobank"></a><br><br>
+  <a href="https://base.monobank.ua/d/9J99rx8GNQAWMh/"><img src="docs/img/monobank-qr.svg" width="180" alt="QR code: donate via monobank"></a><br>
+  <sub>Scan with your phone camera or tap — any Visa / Mastercard, Apple Pay, Google Pay.</sub>
+</p>
 
 Built by **Lalita** ([@lali.mi](https://instagram.com/lali.mi)), founder of [BlackSea](https://blacksea.in.ua) — a marketplace for Ukrainian creators of digital products.
 
