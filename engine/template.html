@@ -393,21 +393,20 @@ function orbit(t) {
   });
 }
 
-// ---- headline wall: {from, to, items, every}; file-name tiles pile up
-const WL = S.wall, WT = [];
-if (WL) {
-  let sd = 11; const r = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
-  const rows = Math.ceil(WL.items.length / 2);
+// ---- headline wall(s): {from, to, items, every, y0, y1} or a list of them; tiles pile up
+const WALLS = Array.isArray(S.wall) ? S.wall : (S.wall ? [S.wall] : []), WT = [];   // one wall or a list of walls
+let wsd = 11; const wrnd = () => (wsd = (wsd * 16807) % 2147483647) / 2147483647;
+WALLS.forEach(WL => {
+  const cols = WL.cols ?? [40, 490], rows = Math.ceil(WL.items.length / cols.length);    // cols: x of each column
+  const y0 = WL.y0 ?? 300, span = (WL.y1 ?? 1480) - y0;                                 // y0 / y1: keep tiles clear of cards and subtitles
   WL.items.forEach((it, i) => {
     const el = document.createElement("div"); el.className = "tile"; el.innerHTML = `<i></i>${it}`; $("wall").appendChild(el);
-    WT.push({ el, x: 40 + (i % 2) * 450 + (r() - 0.5) * 70, y: 300 + Math.floor(i / 2) * (1180 / rows) + (r() - 0.5) * 40, rot: (r() - 0.5) * 16 });
+    WT.push({ el, WL, i, x: cols[i % cols.length] + (wrnd() - 0.5) * 70, y: y0 + Math.floor(i / cols.length) * (span / rows) + (wrnd() - 0.5) * 30, rot: (wrnd() - 0.5) * 16 });
   });
-}
+});
 function wall(t) {
-  if (!WL) return;
-  const o = pr(t, WL.to - 0.2, WL.to);
-  WT.forEach((T, i) => {
-    const a = WL.from + i * (WL.every || 0.07), q = pr(t, a, a + 0.22);
+  WT.forEach(T => {
+    const WL = T.WL, a = WL.from + T.i * (WL.every || 0.07), q = pr(t, a, a + 0.22), o = pr(t, WL.to - 0.2, WL.to);
     T.el.style.opacity = t >= a && t < WL.to ? (clamp(q * 3) * (1 - o)).toFixed(3) : 0;
     T.el.style.transform = `translate(${T.x}px,${T.y}px) rotate(${T.rot}deg) scale(${0.5 + 0.5 * eBack(q)})`;
   });

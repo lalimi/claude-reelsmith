@@ -16,13 +16,13 @@ Input: a transcript, a pasted script, or a link plus description.
 1. Split it into numbered beats, with timings if known.
 2. Name the device in each beat (device list in `references/structures.md`).
 3. Say in one line why it works.
-4. Match it to structure A–D. No match: write it up as a new structure in the same format, append it to `references/structures.md`, add an abstract beat map to `references/examples.md`, and tell the user it was added.
+4. Match it to structure A–G. No match: write it up as a new structure in the same format, append it to `references/structures.md`, add an abstract beat map to `references/examples.md`, and tell the user it was added.
 
 Store beats abstractly: paraphrase, at most a ~5-word illustration per beat. Never paste the source transcript into the reference files.
 
 ### 2. Write a script
 1. **Account + language**: from `facts.md`. If there are several accounts and the request doesn't say which, ask once. Write in the creator's language.
-2. **Structure**: pick from the table in `references/structures.md`. For "give me ideas": one idea per structure, one line each; write the full script only for the one chosen.
+2. **Structure and hook**: pick from the table in `references/structures.md` (A–G) and a hook type from `references/hooks.md`. For "give me ideas": one idea per structure, one line each; write the full script only for the one chosen.
 3. **Script**: one flowing spoken text. Under it, the beat map (beat → time → sentence). Mark 4–8 accent words with `<em>…</em>`, numbers in digits.
 4. **Checklist**: run `references/checklist.md` and fix before showing. Never show a draft that fails it.
 5. **Facts**: product claims only from `facts.md`. Anything else goes in a "Confirm:" list at the end.

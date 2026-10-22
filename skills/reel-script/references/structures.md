@@ -8,6 +8,9 @@ Four beat sequences distilled from viral reels. Beats are abstract; the short it
 | B. Series episode + cliffhanger | a real ongoing journey with stakes (launch, move, goal) | cliffhanger + teaser of the next episode |
 | C. Humor hook → list of N factors | teaching N practical rules with authority | the last item is the CTA itself |
 | D. "The scenario of …" (role-play confession) | a self-sabotaging habit the audience will recognise in themselves | empowering "it's a choice, make it today" (CTA optional) |
+| E. "The experiment" (40 s) | you tried something real with stakes and have a result number | payoff number + one-line lesson + template on screen (save); code word = template name; last line loops to the first |
+| F. "Reverse breakdown" (35–45 s) | a famous success everyone admires for the wrong reason | one quotable line + an open question that splits people; no code word (built for sends) |
+| G. "POV scene" (20–28 s, loops) | a moment your audience lives through (first sale, first refund, a parent's reaction) | plug as a scene detail (a "new order" notification); final pose = opening pose |
 
 ---
 
@@ -51,6 +54,35 @@ The creator speaks *as* the character in first person, then steps out and diagno
 3. **Coin a name** ("This is the scenario of …") and show its **cost**, often through a named archetype.
 4. **Three steps out**, each concrete; the third built on a metaphor.
 5. **Empowering close**: "you don't have to live like this; it's a choice, and you can make it today". CTA optional; if used, a question that is easy to answer in one comment.
+
+---
+
+## E. "The experiment" — stakes, compressed stages (40 s)
+Based on Jenny Hoyos' Shorts loop (hook → foreshadow ≤ 3 s → transition → but/therefore body → payoff → abrupt end).
+1. **0–2 s** result teaser over the result screen ("I gave Claude Code my shop for 7 days…").
+2. **2–5 s** the rule and the stakes ("one rule: I don't step in, even if it breaks everything").
+3. **5–7 s** a transition line that pushes forward (not "so let's start").
+4. **7–26 s** three compressed stages linked by *but / therefore*, each ending on a mini-rehook ("and on day three it got worse").
+5. **26–32 s** payoff number on screen + a twist.
+6. **32–37 s** the lesson in one sentence + the prompt/template on screen (save trigger).
+7. **37–40 s** code word = the template's name, hard cut; the last line flows back into the first.
+
+## F. "Reverse breakdown" — famous thing, real mechanism (35–45 s)
+Kallaway's "context lean → interjection → snapback" used as a whole script.
+1. **0–3 s** something famous everyone admires + 3–5 words on screen.
+2. **3–5 s** "but that's the least interesting part".
+3. **5–8 s** snapback to the real mechanism.
+4. **8–28 s** three proof beats (screens, numbers) linked by *therefore / but*.
+5. **28–36 s** practical value: "in your business it looks like this…".
+6. **36–42 s** one bold quotable line + an open question. No code-word CTA.
+
+## G. "POV scene" — escalating reactions (20–28 s, loops)
+1. **0–1.5 s** on-screen "pov: you just sold your first guide", the creator plays the role.
+2. **1.5–8 s** reaction 1.
+3. **8–16 s** reactions 2 and 3, escalating; the third is the most absurd.
+4. **16–22 s** the turn: one true line about the real pain.
+5. **22–26 s** plug inside the scene (a phone notification), no spoken CTA.
+6. **26–28 s** final pose = opening pose, so it loops.
 
 ---
 

@@ -15,7 +15,7 @@ reelsmith stills reels/my-reel 0.5,7.8,21.3   # extra check frames
 reelsmith build reels/my-reel          # full render (~4–5 min for 60 s)
 ```
 
-Always run `--stills` first: read the printed subtitle list and look at `out/qa_sheet.jpg` (red = Reels/TikTok UI zones; nothing important may sit in red). Fix reel.json, then build. Check the loudness lines printed at the end (−14 LUFS ±1, peak ≤ −1 dB). Then look at frames of the final MP4 around every effect and transition before you hand it over.
+Always run `--stills` first. It prints **RETENTION CHECKS** (evidence in `docs/retention.md`): voice from the first frames, hook text at 0 s, no code word in the hook, pace ≈ 0.33 cuts/s (flags > 0.5/s for 6 s and > 4 s with no visual change), voice pace, end card ≤ 3 s, tail after the last word, > 60 s (Shorts), subtitles > 17 chars/s; the full build adds first-frame brightness, motion in the first 10 frames, silent start and loop similarity. Fix every bullet or say why it stays. `--lint` runs only these checks. Then read the printed subtitle list and look at `out/qa_sheet.jpg` (red = Reels/TikTok UI zones; nothing important may sit in red). Fix reel.json, then build. Check the loudness lines printed at the end (−14 LUFS ±1, peak ≤ −1 dB). Then look at frames of the final MP4 around every effect and transition before you hand it over.
 
 ## Workflow (creator's time ≈ 10 min per reel)
 
@@ -59,7 +59,7 @@ A complete real example (Ukrainian, 61 s, 17 segments, every effect below) is in
 - **lang**: Whisper language of the voice-over (`"uk"`, `"en"`, …); omitted = auto-detect (or `REELSMITH_LANG`).
 - **vo.gaps** `[vo_time, extra_s]`: a breathing pause inserted at the quietest point near that time of the (sped-up) voice — room for a photo montage. **vo.speed**: atempo factor.
 - **"@word" anchors**: any time in hook / end / doodles / glass / checklist / cover / orbit / wall / punch / subs_skip can be `"@thousand"` (start of that script word; exact match first, else prefix), `"@again#2"` (2nd occurrence), `"@twice+0.3"`. Words Whisper mishears get interpolated times — use seconds there. `out/words.json` has the real timings after `--stills`.
-- **subs / punch**: omitted = automatic from `script` + word timings (5–7 words, 1–2 lines, accent words in italic accent colour, no trailing dot, a line never ends on "and/in/of…"; punch-ins on up to 4 accent phrases ≥ 3 s apart). Override with `"subs": [[a, b, "html"]]`, `"punch": [[a, b]]`. Subtitles hide while the hook card is up, under glass titles and checklists, and once the end card starts (`subs_from` / `subs_until` / `subs_skip [[a, b]]` to adjust).
+- **subs / punch**: omitted = automatic from `script` + word timings (up to `subs_words` words, default 5, 1–2 lines, accent words in italic accent colour, no trailing dot, a line never ends on "and/in/of…"; punch-ins on up to 4 accent phrases ≥ 3 s apart). Override with `"subs": [[a, b, "html"]]`, `"punch": [[a, b]]`. Subtitles hide while the hook card is up, under glass titles and checklists, and once the end card starts (`subs_from` / `subs_until` / `subs_skip [[a, b]]` to adjust).
 
 ### Cards and text
 - **hook**: paper card visible from frame 0 (`at: [t…]` reveals lines one by one, `size`, `top`). **end**: card from `from`, lines at `lines_at`, `sub`, `handle`.

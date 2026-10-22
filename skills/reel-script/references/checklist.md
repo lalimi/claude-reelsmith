@@ -13,3 +13,10 @@
 - [ ] **Language**: natural in the target language (no calques, nothing that sounds translated); names, prices and idioms localised.
 - [ ] **On-screen text**: no em-dashes; accent words marked with `<em>`; numbers in digits.
 - [ ] **Montage plan**: 3–5 techniques, each tied to a beat.
+- [ ] **Retention timing**: topic clear by 4 s · contrast word ("but") by 5 s · payoff foreshadowed by 6 s · first value by 10 s · rehook at 10–12 s · a turn in the middle. Beats linked by *but / therefore*, never *and then*.
+- [ ] **Hook** follows `hooks.md`: spoken line = on-screen text = first frame, works on mute, no code word inside it.
+- [ ] **Share trigger** (an identity line people forward to a friend, humour, awe or real usefulness). No explicit "send / tag / comment the word" outside the final CTA: Instagram calls those engagement bait.
+- [ ] **Save trigger** when the reel teaches: something too dense to absorb in one pass on screen (prompt, checklist, template).
+- [ ] **CTA after the payoff, ≤ 3 s**, code word = a meaningful product word; then the reel ends, ideally with a last line that flows into the first (loop).
+- [ ] **On-screen cards paraphrase** the voice (key words), they don't repeat it word for word.
+- [ ] **Shortest complete story**: completion is compared with reels of the same length, padding never helps. TTS voices read slowly: plan for vo.speed 1.12–1.15.

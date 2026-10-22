@@ -1,7 +1,7 @@
 """Build a voice-over reel from <job>/reel.json in one command.
 
 voice (ElevenLabs mp3) -> timed voice (offset + breathing gaps) -> word timings (faster-whisper)
--> subtitles from the script (<em> = accent words, auto-chunked to 5-7 words, 1-2 lines)
+-> subtitles from the script (<em> = accent words, auto-chunked to <= subs_words words (5), 1-2 lines)
 -> punch-ins on accent words -> footage frames -> page render (template.html) -> music shaped by the
 structure -> mix to -14 LUFS -> safe-zone QA sheet, cover, caption.
 
@@ -10,6 +10,8 @@ Usage:
   (= $(reelsmith py) $(reelsmith root)/engine/build.py <reel-dir> ...)
   --stills  only resolve + frames + QA sheet (fast preview, no video)
   --capcut  also render a no-subtitles video and a music track without SFX for the CapCut draft
+  --lint    only the retention checks (first seconds, pace, CTA length, voice pace, subtitles; plus the
+            rendered out/reel.mp4 if it exists), no frames or render. Evidence: docs/retention.md
 reel.json format: skills/reel-builder/SKILL.md"""
 import difflib, hashlib, json, os, re, shutil, subprocess, sys
 from pathlib import Path
@@ -57,7 +59,7 @@ def time_voice(job, vo):
     raw = job / "out/vo_raw.wav"                     # speed: atempo first, so gap times are on the sped-up voice
     sh("ffmpeg", "-v", "error", "-y", "-i", src, *(["-af", f"atempo={vo['speed']}"] if vo.get("speed") else []), "-ar", "48000", "-ac", "1", raw)
     a, sr = load_wav(raw); raw.unlink()
-    shift, prev, parts = vo.get("offset", 0.3), 0.0, []
+    shift, prev, parts = vo.get("offset", 0.05), 0.0, []   # voice from the first frames (skip rate)
     for t, extra in sorted(vo.get("gaps", [])):
         c = snap(a, sr, t, t - 0.25, t + 0.25)
         parts.append((prev, c, shift)); shift += extra; prev = c
@@ -213,7 +215,9 @@ def auto_punch(toks, segs, max_n=4, gap=3.0):
 # ---------------------------------------------------------------- footage
 def frames(job, seg):
     out = job / "frames" / seg["id"]
-    key = json.dumps({k: seg.get(k) for k in ("clip", "img", "ss", "dur", "crop", "pos", "rate")}, sort_keys=True)
+    src_file = resolve(job, seg.get("img") or seg["clip"])
+    key = json.dumps({**{k: seg.get(k) for k in ("clip", "img", "ss", "dur", "crop", "pos", "rate")},
+                      "mtime": src_file.stat().st_mtime}, sort_keys=True)   # a replaced source file re-extracts
     if (out / ".key").exists() and (out / ".key").read_text() == key:
         return len(list(out.glob("*.jpg")))
     shutil.rmtree(out, ignore_errors=True); out.mkdir(parents=True)
@@ -270,6 +274,82 @@ def loudness(f):
     return float(re.findall(r"I:\s+(-?[\d.]+) LUFS", e)[-1]), float((re.findall(r"Peak:\s+(-?[\d.]+) dBFS", e) or ["0"])[-1])
 
 
+# ---------------------------------------------------------------- retention checks
+# Evidence in docs/retention.md: Instagram counts views that leave within 3 s as skips; ~0.33 visual
+# changes/s is the median and >0.5/s for long lowers rewatching; 42% of swipes fall in the last 20%;
+# captions read comfortably at <= 17 chars/s.
+def walls(spec):
+    w = spec.get("wall")
+    return w if isinstance(w, list) else [w] if w else []
+
+
+def lint(spec, segs, words, subs, punch, dur):
+    tips, hook, end = [], spec.get("hook"), spec.get("end")
+    v0 = max(words[0]["s"], (spec.get("vo") or {}).get("offset", 0.05)) if words else 0   # whisper often says 0.0
+    if v0 > 0.15:
+        tips.append(f"the voice starts at {v0:.2f} s: start it in the first frames (vo.offset 0.05)")
+    text0 = (hook and (not hook.get("at") or hook["at"][0] <= 0.3)) or any(w["from"] <= 0.3 for w in walls(spec)) \
+        or (spec.get("cover") or {}).get("from", 9) <= 0.3
+    if not text0:
+        tips.append("no hook text in the first frame: the hook must work on mute from 0 s")
+    if hook and re.search(r"comment|напиши|коментар", " ".join(hook.get("lines", [])), re.I):
+        tips.append("code-word CTA inside the hook: put the CTA after the payoff")
+    cuts = [x["t0"] for x in segs[1:]]
+    ev = sorted(set([0.0] + cuts + [p[0] for p in punch] + [d["at"] for d in spec.get("doodles") or []]
+                    + [w["from"] + i * w.get("every", 0.3) for w in walls(spec) for i in range(len(w["items"]))]
+                    + [t for k in ("glass", "checklist") if spec.get(k) for t in (spec[k].get("at") or [])]
+                    + [spec[k]["from"] for k in ("glass", "checklist", "orbit", "cover") if spec.get(k)]))
+    stop = end["from"] if end else dur
+    ev = [t for t in ev if t < stop] + [stop]
+    rate = len(cuts) / dur if dur else 0
+    dense = [t for t in cuts if sum(t <= c < t + 6 for c in cuts) > 3]
+    print(f"pace: {len(cuts)} cuts in {dur:.1f} s = {rate:.2f}/s (target ~0.33)")
+    if rate > 0.5: tips.append(f"too many cuts ({rate:.2f}/s): above 0.5/s lowers watch-through")
+    if dense: tips.append(f"dense cutting (>0.5/s for over 6 s) from {dense[0]:.1f} s")
+    for a, b in zip(ev, ev[1:]):
+        if b - a > 4: tips.append(f"{a:.1f}–{b:.1f} s: {b - a:.1f} s with no visual change (punch-in, doodle or cut)")
+    if len(words) > 20:
+        wpm = len(words) / max(1, words[-1]["e"] - words[0]["s"]) * 60
+        print(f"voice pace: {wpm:.0f} words/min")
+        if wpm < 165 and (spec.get("vo") or {}).get("speed", 1) < 1.12:
+            tips.append(f"slow voice ({wpm:.0f} words/min): try vo.speed 1.12–1.15")
+    if end and dur - end["from"] > 3.5:
+        tips.append(f"end card lasts {dur - end['from']:.1f} s (from {end['from']:.1f} s): keep it <= 3 s, most swipes happen at the end")
+    if words and dur - words[-1]["e"] > 2:
+        tips.append(f"{dur - words[-1]['e']:.1f} s after the last word: trim the tail")
+    if dur > 60:
+        tips.append(f"{dur:.1f} s: make a <= 59 s cut for YouTube Shorts (longer Shorts with a music claim are blocked)")
+    fast = [x for x in subs if len(re.sub("<[^>]+>", "", x[2])) / max(0.1, x[1] - x[0]) > 17]
+    if fast: tips.append(f"{len(fast)} subtitle(s) faster than 17 chars/s, e.g. \"{re.sub('<[^>]+>', ' ', fast[0][2])}\"")
+    return tips
+
+
+def ff_stats(*args):
+    return subprocess.run(["ffmpeg", "-hide_banner", "-nostdin", *map(str, args), "-f", "null", "-"], capture_output=True, text=True).stderr
+
+
+def qa_video(f):
+    """Checks on the rendered file: first frame not dark, motion in the first 10 frames, no silent start, loop."""
+    tips = []
+    y = re.findall(r"YAVG=([\d.]+)", ff_stats("-i", f, "-frames:v", 1, "-vf", "signalstats,metadata=print:key=lavfi.signalstats.YAVG"))
+    if y and float(y[0]) < 40: tips.append(f"dark first frame (luma {float(y[0]):.0f}/255)")
+    m = re.findall(r"average:([\d.inf]+)", ff_stats("-i", f, "-i", f, "-filter_complex",
+                   "[0:v]trim=end_frame=1[a];[1:v]trim=start_frame=9:end_frame=10,setpts=PTS-STARTPTS[b];[a][b]psnr"))
+    if m and (m[0] == "inf" or float(m[0]) > 42): tips.append("the first 0.3 s are almost static: start the clip mid-motion")
+    sd = ff_stats("-i", f, "-t", 1.5, "-af", "silencedetect=n=-45dB:d=0.15")
+    sil = re.findall(r"silence_end: ([\d.]+)", sd)
+    if sil and float(sil[0]) > 0.2 and "silence_start: 0" in sd: tips.append(f"silent start until {float(sil[0]):.2f} s")
+    ss = re.findall(r"All:([\d.]+)", ff_stats("-i", f, "-sseof", -0.1, "-i", f, "-filter_complex", "[0:v]trim=end_frame=1[a];[1:v]trim=end_frame=1[b];[a][b]ssim"))
+    if ss: print(f"loop: first vs last frame similarity {float(ss[0]):.2f}" + ("" if float(ss[0]) > 0.6 else " (loop not closed)"))
+    return tips
+
+
+def report(job, tips):
+    print("RETENTION CHECKS:" + ("" if tips else " ✓ all good"))
+    for t in tips: print("  •", t)
+    (job / "out/lint.txt").write_text("\n".join(tips) + "\n")
+
+
 # ---------------------------------------------------------------- main
 def main():
     job = Path(sys.argv[1]).expanduser().resolve(); flags = set(sys.argv[2:])
@@ -279,13 +359,15 @@ def main():
     # footage timeline
     segs, t0 = [], 0.0
     for s in spec["segments"]:
-        s = dict(s); s["t0"] = round(t0, 4); s["n"] = frames(job, s); t0 += s["dur"]; segs.append(s)
+        s = dict(s); s["t0"] = round(t0, 4); t0 += s["dur"]; segs.append(s)
+        if "--lint" in flags: continue
+        s["n"] = frames(job, s)
         if s.get("cut"): s["head"] = masks(job, s)
     dur = round(t0, 3)
     print(f"frames: {len(segs)} segments, {dur} s")
 
     # voice -> words -> subtitles / punch
-    voice, toks = None, []
+    voice, toks, words = None, [], []
     if spec.get("vo"):
         voice = time_voice(job, spec["vo"])
         words = transcribe(voice, spec.get("lang") or os.environ.get("REELSMITH_LANG") or None)   # None = auto-detect
@@ -305,7 +387,8 @@ def main():
     skip = [list(w) for w in spec.get("subs_skip", [])]                 # no subtitles under glass titles / checklists
     if spec.get("glass"): skip.append([spec["glass"]["from"] - 0.05, spec["glass"]["to"]])
     if spec.get("checklist"): skip.append([spec["checklist"]["from"] - 0.05, spec["checklist"]["to"]])
-    subs = spec.get("subs") if spec.get("subs") not in (None, "auto") else (make_subs(toks, lo, hi, skip=skip) if toks else [])
+    sw = spec.get("subs_words", 5)                 # <= 17 chars/s reads comfortably
+    subs = spec.get("subs") if spec.get("subs") not in (None, "auto") else (make_subs(toks, lo, hi, maxw=sw, maxc=sw * 7, skip=skip) if toks else [])
     punch = spec.get("punch") if spec.get("punch") not in (None, "auto") else (auto_punch(toks, segs) if toks else [])
     stamps = []
     for st in spec.get("stamps", []):
@@ -315,6 +398,11 @@ def main():
             stamps.append([ss[0]["t0"], round(ss[-1]["t0"] + ss[-1]["dur"], 3), st["text"]])
         else:
             stamps.append(st)
+
+    tips = lint(spec, segs, words, subs, punch, dur)
+    if "--lint" in flags:
+        if (job / "out/reel.mp4").exists(): tips += qa_video(job / "out/reel.mp4")
+        report(job, tips); return
 
     # page
     page = {"fps": FPS, "duration": dur, "segments": [{k: s.get(k) for k in ("id", "dur", "n", "look", "move", "date", "t0", "in", "cut", "head")} for s in segs],
@@ -334,7 +422,8 @@ def main():
     if spec.get("checklist"): extra.append(round(spec["checklist"]["to"] - 0.4, 2))
     for k in ("cover", "orbit"):
         if spec.get(k): extra.append(round(min(spec[k]["from"] + 1.5, spec[k]["to"] - 0.3), 2))
-    if spec.get("wall"): extra.append(round(spec["wall"]["from"] + 0.6, 2))
+    for w in (spec.get("wall") if isinstance(spec.get("wall"), list) else [spec.get("wall")] if spec.get("wall") else []):
+        extra.append(round(w["from"] + 0.6 + 0.07 * len(w["items"]), 2))
     times = sorted(set(([0.5] if hook else []) + [round((a + b) / 2, 2) for a, b, _ in subs][::max(1, len(subs) // 5)] + extra
                        + ([round(end["from"] + 2, 2)] if end else [round(dur - 0.5, 2)])))
     shutil.rmtree(job / "stills", ignore_errors=True); (job / "stills").mkdir()
@@ -347,7 +436,7 @@ def main():
     print("safe-zone check:", job / "out/qa_sheet.jpg")
     if "--stills" in flags:
         for w in warn: print("WARNING:", w)
-        return
+        report(job, tips); return
 
     # video
     sh("node", RENDER, job, "video", job / "out/silent.mp4", FPS, env=env)
@@ -385,7 +474,9 @@ def main():
             shutil.copy(job / "out/silent.mp4", job / "out/reel.mp4")
         sh("ffmpeg", "-v", "error", "-y", "-ss", min(spec.get("cover_t", 0.5), dur - 0.05), "-i", job / "out/reel.mp4", "-frames:v", 1, "-q:v", 2, job / "out/cover.jpg")
     if spec.get("caption"): (job / "out/caption.txt").write_text(spec["caption"].strip() + "\n")
+    tips += qa_video(job / "out/reel.mp4")
     for w in warn: print("WARNING:", w)
+    report(job, tips)
     print("done:", job / "out/reel.mp4")
 
 
