@@ -90,6 +90,27 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#000;-webkit-fon
 #check b{display:block;font:800 50px/1.14 'Manrope',sans-serif;color:var(--ink);letter-spacing:-.01em}
 #check b em{font:italic 900 56px/1 'Playfair Display',serif;color:var(--accent)}
 #check small{display:block;margin-top:8px;font:600 34px/1.25 'Manrope',sans-serif;color:rgba(31,26,23,.62);opacity:0}
+
+/* ---- typer (a prompt typed into a chat / terminal bar), counter, timeline */
+.typer{position:absolute;left:60px;width:850px;background:#17130F;color:#F4EFE6;border-radius:28px;padding:30px 34px 34px;opacity:0;
+  box-shadow:0 2px 6px rgba(0,0,0,.2),0 40px 80px -30px rgba(0,0,0,.6);font:500 38px/1.38 'JetBrains Mono',monospace}
+.typer .lab{display:flex;align-items:center;gap:12px;font:700 22px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(244,239,230,.55);margin-bottom:16px}
+.typer .lab i{width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.typer .tx:before{content:"> ";color:#F08A6C}
+.typer .car{display:inline-block;width:.55em;height:1.05em;margin-left:2px;background:#F4EFE6;vertical-align:-.15em}
+.typer .rep{margin-top:18px;font:700 32px 'JetBrains Mono',monospace;color:#8fe0b0;opacity:0}
+.typer.light{background:var(--cream);color:var(--ink)}.typer.light .car{background:var(--ink)}.typer.light .lab{color:rgba(31,26,23,.55)}
+.counter{position:absolute;left:60px;width:850px;text-align:center;opacity:0;color:#FFF6E8;text-shadow:0 6px 40px rgba(0,0,0,.35)}
+.counter b{display:block;font:900 300px/.9 'Playfair Display',serif;letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums}
+.counter span{display:block;margin-top:44px;font:italic 900 72px/1 'Playfair Display',serif;color:var(--accent);text-shadow:0 2px 0 rgba(255,246,232,.9),0 6px 30px rgba(0,0,0,.3)}
+.tl{position:absolute;left:40px;width:870px;background:rgba(23,19,15,.92);border-radius:24px;padding:22px 22px 26px;opacity:0;overflow:hidden;
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.7)}
+.tl .row{position:relative;height:84px;margin-top:14px}
+.tl .w{position:absolute;top:0;height:78px;border-radius:14px;background:#F4EFE6;color:#1F1A17;font:800 34px/78px 'Manrope',sans-serif;text-align:center;overflow:hidden;white-space:nowrap;opacity:0}
+.tl .c{position:absolute;top:0;height:78px;border-radius:14px;font:600 24px/78px 'JetBrains Mono',monospace;color:#F4EFE6;padding-left:12px;overflow:hidden;white-space:nowrap}
+.tl .ph{position:absolute;top:10px;bottom:10px;width:4px;border-radius:2px;background:var(--accent);box-shadow:0 0 0 3px rgba(212,87,58,.25)}
+.tl .cut{position:absolute;top:150px;width:4px;height:100px;background:#FFF6E8;opacity:0}
+.tl .hd{font:700 24px 'JetBrains Mono',monospace;letter-spacing:.14em;color:rgba(244,239,230,.5);text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -111,6 +132,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#000;-webkit-fon
   <svg id="doodle" viewBox="0 0 1080 1920"></svg>
   <div id="glass"><h1 id="glassH"></h1></div>
   <div class="card" id="check"><div class="tag"><i></i><span id="checkT"></span></div><ul id="checkL"></ul></div>
+  <div id="fx2"></div>
   <div id="subs"><span id="subT"></span></div>
   <div class="card" id="hook"><div class="tag"><i></i><span id="hookTag"></span></div><h1 id="hookH"></h1></div>
   <div class="card" id="end"><h1 id="endH"></h1><p class="sub" id="endSub"></p><div class="handle" id="endHandle"></div></div>
@@ -299,6 +321,59 @@ function doodles(t) {
   });
 }
 
+// ---- typer: [{from, to, text, until?, label?, reply?, reply_at?, top?, light?}] text typed char by char with a caret
+const asList = v => Array.isArray(v) ? v : (v ? [v] : []);
+const TYP = asList(S.type).map(T => {
+  const el = document.createElement("div"); el.className = "typer" + (T.light ? " light" : ""); el.style.top = (T.top ?? 300) + "px";
+  el.innerHTML = (T.label ? `<div class="lab"><i></i>${T.label}</div>` : "") + `<div><span class="tx"></span><span class="car"></span></div>` +
+    (T.reply ? `<div class="rep">${T.reply}</div>` : "");
+  $("fx2").appendChild(el); return { T, el, tx: el.querySelector(".tx"), car: el.querySelector(".car"), rep: el.querySelector(".rep") };
+});
+function typer(t) {
+  TYP.forEach(({ T, el, tx, car, rep }) => {
+    const on = t >= T.from && t < T.to; el.style.opacity = on ? Math.min(eOut(pr(t, T.from, T.from + 0.2)), 1 - pr(t, T.to - 0.2, T.to)) : 0; if (!on) return;
+    el.style.transform = `translateY(${(1 - eOut(pr(t, T.from, T.from + 0.25))) * 30}px)`;
+    const until = T.until ?? T.from + 0.25 + T.text.length / 28, n = Math.round(T.text.length * pr(t, T.from + 0.15, until));
+    tx.textContent = T.text.slice(0, n);
+    car.style.opacity = n < T.text.length || Math.floor(t * 2.5) % 2 ? 1 : 0;   // solid while typing, blinks after
+    if (rep) { const q = eOut(pr(t, T.reply_at ?? until + 0.2, (T.reply_at ?? until + 0.2) + 0.25)); rep.style.opacity = q; rep.style.transform = `translateY(${(1 - q) * 12}px)`; }
+  });
+}
+
+// ---- counter: [{from, to, start, end, count_at: [a, b], label?, top?, suffix?}] a big number that counts up
+const CNT = asList(S.counter).map(C => {
+  const el = document.createElement("div"); el.className = "counter"; el.style.top = (C.top ?? 760) + "px";
+  el.innerHTML = `<b></b>${C.label ? `<span>${C.label}</span>` : ""}`; $("fx2").appendChild(el); return { C, el, b: el.querySelector("b") };
+});
+function counter(t) {
+  CNT.forEach(({ C, el, b }) => {
+    const on = t >= C.from && t < C.to; el.style.opacity = on ? Math.min(eOut(pr(t, C.from, C.from + 0.2)), 1 - pr(t, C.to - 0.2, C.to)) : 0; if (!on) return;
+    const [a, z] = C.count_at || [C.from, C.from + 1], q = eOut(pr(t, a, z)), v = Math.round((C.start ?? 0) + ((C.end ?? 100) - (C.start ?? 0)) * q);
+    b.textContent = v + (C.suffix || ""); el.style.transform = `scale(${0.9 + 0.1 * eBack(pr(t, C.from, C.from + 0.35)) + (q >= 1 ? 0.03 * (1 - pr(t, z, z + 0.25)) : 0)})`;
+  });
+}
+
+// ---- timeline: {from, to, top?, label?, words: [[t, "word"]...], clips: ["name", ...]} an editor timeline:
+// words land on the top track as they are spoken, the playhead follows them, a cut appears under every clip change
+const TLS = asList(S.timeline).map(L => {
+  const el = document.createElement("div"); el.className = "tl"; el.style.top = (L.top ?? 300) + "px";
+  const t0 = L.words[0][0], t1 = L.words[L.words.length - 1][0] + 0.45, X = t => 8 + (t - t0) / (t1 - t0) * 806;
+  const W = L.words.map(([t, w], i) => `<div class="w" style="left:${X(t)}px;width:${Math.max(40, X((L.words[i + 1] || [t1])[0]) - X(t) - 6)}px">${w}</div>`).join("");
+  const cols = ["#D4573A", "#3E7C6B", "#8A6FB0", "#C9973B", "#4F78A8"], nC = L.clips.length;
+  const Cc = L.clips.map((c, i) => `<div class="c" style="left:${8 + i * 806 / nC}px;width:${806 / nC - 6}px;background:${cols[i % cols.length]}">${c}</div>`).join("");
+  const cuts = L.clips.slice(1).map((_, i) => `<div class="cut" style="left:${8 + (i + 1) * 806 / nC - 4}px"></div>`).join("");
+  el.innerHTML = `<div class="hd">${L.label || "timeline"}</div><div class="row">${W}</div><div class="row">${Cc}</div>${cuts}<div class="ph"></div>`;
+  $("fx2").appendChild(el); return { L, el, X, t0, t1, ws: [...el.querySelectorAll(".w")], cs: [...el.querySelectorAll(".cut")], ph: el.querySelector(".ph"), nC };
+});
+function timeline(t) {
+  TLS.forEach(({ L, el, X, t0, t1, ws, cs, ph, nC }) => {
+    const on = t >= L.from && t < L.to; el.style.opacity = on ? Math.min(eOut(pr(t, L.from, L.from + 0.2)), 1 - pr(t, L.to - 0.2, L.to)) : 0; if (!on) return;
+    ws.forEach((w, i) => { const q = eOut(pr(t, L.words[i][0] - 0.05, L.words[i][0] + 0.15)); w.style.opacity = q; w.style.transform = `translateY(${(1 - q) * -20}px)`; });
+    const x = X(clamp(t, t0, t1)); ph.style.left = (x + 20) + "px";
+    cs.forEach((c, i) => { const cx = 8 + (i + 1) * 806 / nC; c.style.opacity = x >= cx - 8 ? 1 : 0; });
+  });
+}
+
 // ---- glass type: {from, to, lines, at}
 const GL = S.glass;
 if (GL) $("glassH").innerHTML = GL.lines.map(l => `<span>${l}</span>`).join("");
@@ -439,6 +514,9 @@ async function render(t) {
   doodles(t);
   glass(t);
   checklist(t);
+  typer(t);
+  counter(t);
+  timeline(t);
   gx.putImageData(NOISE[Math.floor(t * FPS) % NOISE.length], 0, 0);
 }
 window.DUR = DUR; window.render = render; window.ready = Promise.all([document.fonts.ready, orbReady, mastReady]);

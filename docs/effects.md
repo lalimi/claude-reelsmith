@@ -16,3 +16,6 @@ Use 3–5 per reel, each on the beat it explains — see the table in `skills/re
 
 ## Not built yet (ideas welcome)
 couch wall · UI world · phone mockup · green screen · paper cut · vertigo (dolly zoom) · chart grow as an engine key. Pull requests welcome.
+
+## Typewriter, counter, timeline (v0.2.1)
+Visualise what the voice says: `type` types a prompt into a chat bar ("I typed one sentence"), `counter` counts a number up ("a hundred tiny rules"), `timeline` drops the spoken words onto an editor timeline with cut marks ("cuts them to my words"). Keys: skills/reel-builder/SKILL.md.

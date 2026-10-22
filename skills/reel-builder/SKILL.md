@@ -69,6 +69,9 @@ A complete real example (Ukrainian, 61 s, 17 segments, every effect below) is in
 - **checklist**: `{"from", "to", "title", "items": [{"text", "sub", "at", "sub_at"}]}` card that grows item by item, ticks drawn at `at`.
 - **wall** (headline wall): `{"from", "to", "items": [...], "every": 0.06}` file-name / headline tiles piling up; put a glass title on top.
 - **orbit**: `{"from", "to", "seg", "text": "1000 FOLLOWERS · ", "speed", "scale", "tilt", "lift"}` text ring around the head on a `cut` segment; the back half passes behind the person. Best on a close selfie.
+- **type** (typewriter): `{"from", "to", "text", "until", "label", "reply", "reply_at", "top", "light"}` or a list. A dark chat/terminal bar at `top` (300) where `text` is typed char by char up to `until`, caret blinks after; `reply` (e.g. "✓ reel.mp4") fades in at `reply_at`. Use it when the voice says "I typed / I asked".
+- **counter**: `{"from", "to", "start", "end", "count_at": [a, b], "label", "suffix", "top"}` or a list. A big number counting from `start` to `end` between `count_at` times (anchors work: `["@hundred", "@rules"]`), label in accent italic under it.
+- **timeline**: `{"from", "to", "span": ["@Then", "@adds"], "clips": ["a.mov", "b.mov"], "label", "top"}` or a list. An editor timeline: the spoken words of `span` land on the top track as they are said, the playhead follows, a cut mark appears under every clip change (or give `words: [[t, "word"], …]`).
 - **doodles** (doodle boil): `{"kind": "text"|"circle"|"underline"|"strike"|"arrow", "at", "to", "x", "y", …}` — text: `text, size, rot, write`; circle/strike: `w, h` (strike `n` zig-zags; 3 keeps the word readable); underline: `w`; arrow: `x2, y2, bend`; `color`, `width`. Accent ink with a cream halo, written on left → right, wobbling every 3 frames. Keep them above y ≈ 1000 while the hook card is up and off faces.
 
 ### Segments

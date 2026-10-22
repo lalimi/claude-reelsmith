@@ -127,7 +127,7 @@ def align(toks, words):
 
 WEAK = set(("і й та а але в у з із зі до від на по за для про що як де бо чи не ні ж же "     # uk
              "and a an the of to in on at for with or but by from as that so not").split())        # en
-TIME_KEYS = {"at", "to", "from", "out", "lines_at", "sub_at", "handle_at"}
+TIME_KEYS = {"at", "to", "from", "out", "lines_at", "sub_at", "handle_at", "until", "reply_at", "count_at"}
 
 
 def anchor(toks, v):
@@ -298,7 +298,8 @@ def lint(spec, segs, words, subs, punch, dur):
     ev = sorted(set([0.0] + cuts + [p[0] for p in punch] + [d["at"] for d in spec.get("doodles") or []]
                     + [w["from"] + i * w.get("every", 0.3) for w in walls(spec) for i in range(len(w["items"]))]
                     + [t for k in ("glass", "checklist") if spec.get(k) for t in (spec[k].get("at") or [])]
-                    + [spec[k]["from"] for k in ("glass", "checklist", "orbit", "cover") if spec.get(k)]))
+                    + [spec[k]["from"] for k in ("glass", "checklist", "orbit", "cover") if spec.get(k)]
+                    + [x["from"] for k in ("type", "counter", "timeline") for x in (spec[k] if isinstance(spec.get(k), list) else [spec[k]] if spec.get(k) else [])]))
     stop = end["from"] if end else dur
     ev = [t for t in ev if t < stop] + [stop]
     rate = len(cuts) / dur if dur else 0
@@ -377,8 +378,12 @@ def main():
             toks, ratio = align(script_tokens(spec["script"]), words)
             print(f"script ↔ voice: {ratio:.0%} of words matched")
             if ratio < 0.7: warn.append("the script differs a lot from the voice-over: check the text (or set \"lang\")")
-    for k in ("hook", "end", "doodles", "glass", "checklist", "cover", "wall", "orbit"):   # "@word" times -> seconds
+    for k in ("hook", "end", "doodles", "glass", "checklist", "cover", "wall", "orbit", "type", "counter", "timeline"):   # "@word" times -> seconds
         if spec.get(k): spec[k] = anchors(toks, spec[k], k if k == "doodles" else None)
+    for L in (spec["timeline"] if isinstance(spec.get("timeline"), list) else [spec["timeline"]] if spec.get("timeline") else []):
+        if not L.get("words") and L.get("span") and toks:          # words land on the timeline as they are spoken
+            a, b = anchors(toks, L["span"], "at")
+            L["words"] = [[round(t["s"], 2), re.sub(r"[.,;:!?]+$", "", t["t"]).lower()] for t in toks if a <= t["s"] < b]
     for k in ("subs_skip", "punch", "subs_from", "subs_until"):
         if isinstance(spec.get(k), (list, str)): spec[k] = anchors(toks, spec[k], "at")
     hook, end = spec.get("hook"), spec.get("end")
@@ -408,7 +413,8 @@ def main():
     page = {"fps": FPS, "duration": dur, "segments": [{k: s.get(k) for k in ("id", "dur", "n", "look", "move", "date", "t0", "in", "cut", "head")} for s in segs],
             "subs": subs, "punch": punch, "stamps": stamps, "hook": hook, "end": end, "colors": spec.get("colors"),
             "doodles": spec.get("doodles"), "glass": spec.get("glass"), "checklist": spec.get("checklist"),
-            "cover": spec.get("cover"), "wall": spec.get("wall"), "orbit": spec.get("orbit")}
+            "cover": spec.get("cover"), "wall": spec.get("wall"), "orbit": spec.get("orbit"),
+            "type": spec.get("type"), "counter": spec.get("counter"), "timeline": spec.get("timeline")}
     (job / "spec.js").write_text("window.SPEC = " + json.dumps(page, ensure_ascii=False) + ";\n")
     shutil.copy(ENGINE / "template.html", job / "index.html")
     if not (job / "fonts").exists(): (job / "fonts").symlink_to(ENGINE / "fonts")
