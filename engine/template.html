@@ -344,8 +344,11 @@ if (CV) {
   if (CV.top) $("mast").style.top = CV.top + "px";
   if (CV.color) { $("mastH").style.color = CV.color; const is = $("mast").querySelector(".issue"); is.style.color = CV.color; is.style.borderTopColor = CV.color; is.style.textShadow = "none"; $("mastH").style.textShadow = "none"; }
 }
-const mastReady = document.fonts.ready.then(() => {            // fit the masthead to the column
-  if (CV) { const h = $("mastH"); h.style.fontSize = Math.min(230, 200 * 968 / h.scrollWidth) + "px"; }
+const mastReady = (CV ? document.fonts.load('900 200px "Playfair Display"', CV.title) : Promise.resolve()).then(() => document.fonts.ready).then(() => {   // load the face first: measuring a fallback font overflows the column
+  if (CV) {                                                     // real glyph run width (scrollWidth misses centred overflow)
+    const h = $("mastH"), k = [...h.children], w = k[k.length - 1].getBoundingClientRect().right - k[0].getBoundingClientRect().left;
+    h.style.fontSize = Math.min(230, parseFloat(getComputedStyle(h).fontSize) * 930 / w) + "px";
+  }
 });
 function cover(t) {
   const el = $("mast"); if (!CV) return;

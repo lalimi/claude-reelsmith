@@ -469,7 +469,9 @@ def main():
     if not voice:                                          # no voice-over: picture (+ music if any) is the reel
         if mwav:
             sh("ffmpeg", "-v", "error", "-y", "-i", job / "out/silent.mp4", "-i", mwav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+               "-af", "loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000",      # music-only reels were ~-20 LUFS
                "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", job / "out/reel.mp4")
+            i, p = loudness(job / "out/reel.mp4"); print(f"reel.mp4: {i:.1f} LUFS, peak {p:.1f} dB")
         else:
             shutil.copy(job / "out/silent.mp4", job / "out/reel.mp4")
         sh("ffmpeg", "-v", "error", "-y", "-ss", min(spec.get("cover_t", 0.5), dur - 0.05), "-i", job / "out/reel.mp4", "-frames:v", 1, "-q:v", 2, job / "out/cover.jpg")
