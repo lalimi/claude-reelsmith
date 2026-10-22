@@ -1,0 +1,463 @@
+{
+ "hook": {
+  "lines": [
+   "I typed one sentence.",
+   "<em>Claude edited this reel.</em>"
+  ],
+  "out": 2.1
+ },
+ "cover": {
+  "from": 0,
+  "to": 2.1,
+  "title": "REELSMITH",
+  "left": "open source · claude code",
+  "right": "@lali.mi",
+  "top": 330
+ },
+ "orbit": {
+  "from": 11.3,
+  "to": 13.3,
+  "seg": "H",
+  "text": "THIS TEXT WAS MADE BY CLAUDE TOO · ",
+  "speed": 1.4
+ },
+ "glass": {
+  "from": 13.3,
+  "to": 15.2,
+  "lines": [
+   "editing isn't",
+   "<em>creativity</em>"
+  ],
+  "at": [
+   "@Editing",
+   "@creativity"
+  ]
+ },
+ "wall": [
+  {
+   "from": 10.3,
+   "to": 11.3,
+   "every": 0.12,
+   "y0": 300,
+   "y1": 760,
+   "cols": [
+    40,
+    490
+   ],
+   "items": [
+    "zoom-through",
+    "whip",
+    "glass type",
+    "orbit text",
+    "doodles",
+    "b/w → colour"
+   ]
+  },
+  {
+   "from": 16.9,
+   "to": 19.05,
+   "every": 0.16,
+   "y0": 300,
+   "y1": 1180,
+   "items": [
+    "hook in 1 second",
+    "subtitles: 5 words",
+    "−14 LUFS",
+    "like button: 170 px",
+    "no text over eyes",
+    "a cut every ~3 s",
+    "fresh clips only",
+    "music under the voice",
+    "end card ≤ 3 s",
+    "loop the ending",
+    "cover 3:4",
+    "safe zones"
+   ]
+  }
+ ],
+ "stamps": [
+  {
+   "seg": "M",
+   "text": "result · ukrainian voice-over"
+  }
+ ],
+ "end": {
+  "from": 23.95,
+  "lines": [
+   "free & open source",
+   "<em>claude-reelsmith</em>"
+  ],
+  "lines_at": [
+   24.0,
+   24.3
+  ],
+  "sub": "github.com/lalimi/claude-reelsmith",
+  "sub_at": 24.6,
+  "handle": "/plugin install reelsmith@lalimi",
+  "handle_at": 25.0
+ },
+ "segments": [
+  {
+   "id": "A",
+   "clip": "../chernetka/src/night_watch_7621.MP4",
+   "ss": 9.5,
+   "dur": 3.6,
+   "crop": [
+    0,
+    0.196,
+    0.75
+   ],
+   "cut": true
+  },
+  {
+   "id": "C",
+   "img": "cards/card_script.jpg",
+   "dur": 1.25,
+   "in": "whip"
+  },
+  {
+   "id": "D",
+   "img": "cards/card_album.jpg",
+   "dur": 3.7,
+   "in": "whip"
+  },
+  {
+   "id": "F",
+   "clip": "../ne-montuvala/src/laptop_7613.MOV",
+   "ss": 10.0,
+   "dur": 1.7,
+   "look": "bw",
+   "in": "zoom"
+  },
+  {
+   "id": "G",
+   "clip": "../ne-montuvala/src/bukovel_0405.MOV",
+   "ss": 0.3,
+   "dur": 1.05,
+   "look": "burst"
+  },
+  {
+   "id": "H",
+   "clip": "../ne-montuvala/src/blacktop_8420.MOV",
+   "ss": 3.0,
+   "dur": 2.0,
+   "cut": true
+  },
+  {
+   "id": "I",
+   "clip": "../ne-montuvala/src/wrist_0519.MP4",
+   "ss": 12.0,
+   "dur": 3.6
+  },
+  {
+   "id": "J",
+   "clip": "../ne-montuvala/src/laptop_7613.MOV",
+   "ss": 1.0,
+   "dur": 2.15
+  },
+  {
+   "id": "K",
+   "img": "cards/card_checks.jpg",
+   "dur": 3.25,
+   "in": "zoom"
+  },
+  {
+   "id": "M",
+   "clip": "../ne-montuvala/out/reel.mp4",
+   "ss": 9.3,
+   "dur": 1.65,
+   "in": "zoom"
+  },
+  {
+   "id": "N",
+   "clip": "../ne-montuvala/src/mirror_2510.MOV",
+   "ss": 3.4,
+   "dur": 3.35,
+   "move": "pull-out"
+  }
+ ],
+ "music": "music/m1_fit.wav",
+ "cover_t": 1.2,
+ "caption": "I typed one sentence and Claude Code edited this reel from my own clips: script, fresh footage, effects, subtitles, safe-zone and retention checks. Free and open source: github.com/lalimi/claude-reelsmith",
+ "lang": "en",
+ "vo": {
+  "file": "vo/solomiya.mp3",
+  "offset": 0.05
+ },
+ "script": "I typed one sentence, and <em>Claude edited this reel</em>. It writes the <em>script</em>, picks <em>fresh clips</em> from my camera roll, and plans <em>every cut</em>. Then it cuts them <em>to my words</em> and adds <em>effects</em>, even <em>this text around my head</em>. Editing isn't creativity. It's <em>a hundred tiny rules</em>, and Claude follows <em>all of them</em>: the app's <em>button zones</em>, <em>retention rules</em> from research. It works in <em>any language</em>. And it's <em>free and open source</em>.",
+ "subs": [
+  [
+   2.25,
+   3.55,
+   "<em>Claude edited this reel</em>"
+  ],
+  [
+   3.64,
+   4.82,
+   "it writes the <em>script</em>"
+  ],
+  [
+   4.84,
+   6.75,
+   "picks <em>fresh clips</em><br>from my camera roll"
+  ],
+  [
+   6.8,
+   8.4,
+   "and plans <em>every cut</em>"
+  ],
+  [
+   8.52,
+   10.0,
+   "then it cuts them<br><em>to my words</em>"
+  ],
+  [
+   10.02,
+   11.25,
+   "and adds <em>effects</em>"
+  ],
+  [
+   11.3,
+   13.15,
+   "even <em>this text<br>around my head</em>"
+  ],
+  [
+   16.92,
+   18.97,
+   "and Claude follows<br><em>all of them</em>"
+  ],
+  [
+   19.02,
+   20.38,
+   "the app's <em>button zones</em>"
+  ],
+  [
+   20.4,
+   22.2,
+   "<em>retention rules</em><br>from research"
+  ]
+ ],
+ "music_gain": 0.34,
+ "type": [
+  {
+   "from": 2.1,
+   "to": 3.6,
+   "label": "claude code",
+   "text": "make a reel from my clips: why my ideas never become reels",
+   "until": 3.0,
+   "reply": "✓ reel.mp4 · cover.jpg · caption.txt",
+   "reply_at": 3.1,
+   "top": 300
+  }
+ ],
+ "doodles": [
+  {
+   "kind": "strike",
+   "at": 5.0,
+   "to": 8.55,
+   "x": 66,
+   "y": 540,
+   "w": 112,
+   "h": 90,
+   "n": 3
+  },
+  {
+   "kind": "strike",
+   "at": 5.15,
+   "to": 8.55,
+   "x": 481,
+   "y": 774,
+   "w": 112,
+   "h": 90,
+   "n": 3
+  },
+  {
+   "kind": "circle",
+   "at": 5.35,
+   "to": 8.55,
+   "x": 470,
+   "y": 472,
+   "w": 134,
+   "h": 222,
+   "color": "accent",
+   "width": 10
+  },
+  {
+   "kind": "circle",
+   "at": 5.6,
+   "to": 8.55,
+   "x": 55,
+   "y": 706,
+   "w": 134,
+   "h": 222,
+   "color": "accent",
+   "width": 10
+  },
+  {
+   "kind": "circle",
+   "at": 5.85,
+   "to": 8.55,
+   "x": 262,
+   "y": 940,
+   "w": 134,
+   "h": 222,
+   "color": "accent",
+   "width": 10
+  },
+  {
+   "kind": "circle",
+   "at": 6.1,
+   "to": 8.55,
+   "x": 678,
+   "y": 940,
+   "w": 134,
+   "h": 222,
+   "color": "accent",
+   "width": 10
+  },
+  {
+   "kind": "text",
+   "text": "fresh",
+   "at": 6.0,
+   "to": 8.55,
+   "x": 600,
+   "y": 1265,
+   "size": 100,
+   "rot": -6
+  },
+  {
+   "kind": "text",
+   "text": "1",
+   "at": 6.9,
+   "to": 8.55,
+   "x": 477,
+   "y": 575,
+   "size": 110,
+   "rot": -4,
+   "color": "accent"
+  },
+  {
+   "kind": "text",
+   "text": "2",
+   "at": 7.15,
+   "to": 8.55,
+   "x": 62,
+   "y": 809,
+   "size": 110,
+   "rot": -4,
+   "color": "accent"
+  },
+  {
+   "kind": "text",
+   "text": "3",
+   "at": 7.4,
+   "to": 8.55,
+   "x": 269,
+   "y": 1043,
+   "size": 110,
+   "rot": -4,
+   "color": "accent"
+  },
+  {
+   "kind": "text",
+   "text": "4",
+   "at": 7.65,
+   "to": 8.55,
+   "x": 685,
+   "y": 1043,
+   "size": 110,
+   "rot": -4,
+   "color": "accent"
+  },
+  {
+   "kind": "underline",
+   "at": 3.85,
+   "to": 4.85,
+   "x": 205,
+   "y": 668,
+   "w": 250,
+   "color": "accent"
+  },
+  {
+   "kind": "underline",
+   "at": 4.3,
+   "to": 4.85,
+   "x": 612,
+   "y": 885,
+   "w": 200,
+   "color": "accent"
+  },
+  {
+   "kind": "circle",
+   "at": 19.25,
+   "to": 22.3,
+   "x": 240,
+   "y": 660,
+   "w": 80,
+   "h": 190,
+   "color": "accent",
+   "width": 10
+  },
+  {
+   "kind": "circle",
+   "at": 19.5,
+   "to": 22.3,
+   "x": 484,
+   "y": 660,
+   "w": 80,
+   "h": 190,
+   "color": "accent",
+   "width": 10
+  },
+  {
+   "kind": "underline",
+   "at": 20.5,
+   "to": 22.3,
+   "x": 128,
+   "y": 1062,
+   "w": 780,
+   "color": "accent"
+  },
+  {
+   "kind": "circle",
+   "at": 20.9,
+   "to": 22.3,
+   "x": 352,
+   "y": 1096,
+   "w": 140,
+   "h": 64,
+   "color": "accent",
+   "width": 9
+  }
+ ],
+ "timeline": {
+  "from": 8.55,
+  "to": 10.3,
+  "top": 300,
+  "label": "timeline · cut to the words",
+  "span": [
+   "@Then",
+   "@adds"
+  ],
+  "clips": [
+   "mirror.mov",
+   "laptop.mov",
+   "bukovel.mov",
+   "wrist.mov"
+  ]
+ },
+ "counter": [
+  {
+   "from": 15.2,
+   "to": 16.9,
+   "start": 0,
+   "end": 100,
+   "count_at": [
+    "@hundred",
+    "@rules"
+   ],
+   "label": "tiny rules",
+   "top": 640
+  }
+ ]
+}

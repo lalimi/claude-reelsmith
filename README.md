@@ -3,9 +3,9 @@
 **Reels and TikToks from your own footage, directed and edited by Claude Code.**
 You approve an idea and a script. Claude writes it, voices it, picks fresh shots from your camera roll, cuts them to the words, adds motion effects and subtitles, mixes sound, and hands you a post-ready MP4, a cover and a caption. Your time: about 10 minutes per reel.
 
-<p align="center"><img src="docs/img/demo.gif" width="240" alt="demo: cover story, orbit text, headline wall + glass type, checklist"></p>
+<p align="center"><img src="docs/img/demo.gif" width="240" alt="demo: cover story, typed prompt, picking fresh clips, word timeline, orbit text, counter"></p>
 
-▶ **[Watch the full demo reel](https://github.com/lalimi/claude-reelsmith/releases/download/v0.1.0/eternal-draft-demo.mp4)** — 61 s, Ukrainian voice-over, 15 of the author's own clips, built in one session with this repo.
+▶ **[Watch the demo reel](https://github.com/lalimi/claude-reelsmith/releases/download/v0.2.1/reelsmith-demo-en.mp4)** — 27 s, English voice-over, the author's own clips, built with this repo ([reel.json](examples/demo-en/reel.json)). Also: [a 61 s Ukrainian reel](https://github.com/lalimi/claude-reelsmith/releases/download/v0.1.0/eternal-draft-demo.mp4) made the same way.
 
 ---
 
@@ -24,7 +24,7 @@ You approve an idea and a script. Claude writes it, voices it, picks fresh shots
 
 <p align="center"><img src="docs/img/effects_strip.jpg" alt="cover story, doodle boil, orbit, headline wall, glass type, checklist"></p>
 
-cover story + frame break · orbit text around your head · doodle boil · glass type · headline wall · checklist · black-and-white → colour burst · photo montage with camera date stamp · punch-ins on accent words · zoom-through and whip transitions · hook and end cards · stamps · subtitles with accent words · Reels/TikTok safe-zone QA sheet · **retention checks** on every build (first seconds, pace, CTA length, voice pace, subtitle speed, loop), with sources in [docs/retention.md](docs/retention.md).
+cover story + frame break · orbit text around your head · doodle boil · glass type · headline wall · checklist · typewriter prompt · number counter · editor timeline with the spoken words · black-and-white → colour burst · photo montage with camera date stamp · punch-ins on accent words · zoom-through and whip transitions · hook and end cards · stamps · subtitles with accent words · Reels/TikTok safe-zone QA sheet · **retention checks** on every build (first seconds, pace, CTA length, voice pace, subtitle speed, loop), with sources in [docs/retention.md](docs/retention.md).
 
 ## Install
 
@@ -64,7 +64,7 @@ reelsmith build reels/launch --stills   # fast preview + safe-zone QA sheet
 reelsmith build reels/launch        # final MP4, cover.jpg, caption.txt in reels/launch/out/
 ```
 
-A real 17-segment example with every effect: [`examples/chernetka/reel.json`](examples/chernetka/reel.json) (footage not included).
+Real examples: [`examples/chernetka/reel.json`](examples/chernetka/reel.json) (17 segments, Ukrainian) and [`examples/demo-en/reel.json`](examples/demo-en/reel.json) (the English demo: typewriter, timeline, counter, doodles). Footage not included.
 
 ## How it works
 
