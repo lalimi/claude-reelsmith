@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>reel 2026-10-26: тобі не потрібна велика аудиторія</title>
+<style>
+@font-face { font-family: Unbounded; font-weight: 700; src: url(fonts/unbounded-cyrillic-700-normal.woff2) format('woff2'); unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family: Unbounded; font-weight: 700; src: url(fonts/unbounded-latin-700-normal.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: Unbounded; font-weight: 900; src: url(fonts/unbounded-cyrillic-900-normal.woff2) format('woff2'); unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family: Unbounded; font-weight: 900; src: url(fonts/unbounded-latin-900-normal.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: Onest; font-weight: 400; src: url(fonts/onest-cyrillic-400-normal.woff2) format('woff2'); unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family: Onest; font-weight: 400; src: url(fonts/onest-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: Onest; font-weight: 500; src: url(fonts/onest-cyrillic-500-normal.woff2) format('woff2'); unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family: Onest; font-weight: 500; src: url(fonts/onest-latin-500-normal.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: Onest; font-weight: 700; src: url(fonts/onest-cyrillic-700-normal.woff2) format('woff2'); unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family: Onest; font-weight: 700; src: url(fonts/onest-latin-700-normal.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+:root {
+  --paper: #f4f4ef; --ink: #0c0f0e; --green: #5dc7a0; --teal: #89b7b0;
+  --teal-d: #496d69; --yellow: #e3bc5b; --blob: #9cc4bd; --pill-ink: #0b241c;
+  --mx: 72px;            /* side margin */
+  --safe-top: 285px;     /* Instagram safe zone: y 285 .. 1635 */
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+body { font-family: Onest, sans-serif; -webkit-font-smoothing: antialiased; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.s-teal  { background: var(--teal);  color: var(--ink); }
+.s-paper { background-color: var(--paper); color: var(--ink);
+  background-image: linear-gradient(rgba(12,15,14,.07) 2px, transparent 2px),
+                    linear-gradient(90deg, rgba(12,15,14,.07) 2px, transparent 2px);
+  background-size: 54px 54px; background-position: -1px -1px; }
+.s-ink   { background: var(--ink);   color: var(--paper); }
+.s-green { background: var(--green); color: var(--ink); }
+
+/* ---------- decor ---------- */
+.halftone { position: absolute; border-radius: 50%;
+  background-image: radial-gradient(circle, var(--dot) 3px, transparent 3.6px);
+  background-size: 16px 16px;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 30%, transparent 100%);
+          mask-image: radial-gradient(circle closest-side, #000 30%, transparent 100%); }
+.blob { position: absolute; }
+.blob path { fill: var(--blobc); }
+.wave { position: absolute; overflow: visible; }
+.wave path { fill: none; stroke: var(--green); stroke-width: 6; stroke-linecap: round; }
+
+/* ---------- chrome ---------- */
+.pill { position: absolute; left: var(--mx); top: 306px; background: var(--green); color: var(--pill-ink);
+  font: 700 24px/1 Onest; padding: 13px 22px 14px; border-radius: 99px; letter-spacing: .2px; }
+.s-green .pill { box-shadow: 0 0 0 3px var(--ink); }
+.footer { position: absolute; left: var(--mx); top: 1556px; font: 500 28px/1 Onest; letter-spacing: .3px; opacity: .9; }
+.tag { position: absolute; left: var(--mx); top: 400px; background: var(--yellow); color: var(--ink);
+  font: 700 34px/1 Onest; padding: 15px 26px 17px; border: 3px solid var(--ink); border-radius: 14px;
+  box-shadow: 5px 6px 0 var(--ink); transform-origin: 20% 60%; }
+
+/* ---------- headlines ---------- */
+.head { position: absolute; left: var(--mx); font-family: Unbounded; font-weight: 900; text-transform: uppercase;
+  line-height: .98; letter-spacing: -1px; }
+.head .ln { width: max-content; white-space: nowrap; }
+.w { display: inline-block; will-change: transform, opacity; }
+.wi { display: inline-block; position: relative; }
+.tx { position: relative; z-index: 1; }
+.mk { position: absolute; z-index: 0; left: -.1em; right: -.1em; top: .05em; bottom: .01em;
+  background: var(--green); border-radius: .08em; transform-origin: 0 50%; transform: scaleX(0); }
+.s-teal .acc, .s-green .acc { color: #fff; text-shadow: .035em .045em 0 var(--ink); }
+.s-teal .mk, .s-green .mk { display: none; }
+.s-ink .acc { color: var(--ink); }
+
+/* ---------- cover ---------- */
+.sub { position: absolute; left: var(--mx); width: 760px; font: 500 46px/1.18 Onest; letter-spacing: -.2px; }
+.play { position: absolute; width: 210px; height: 210px; border-radius: 50%; background: var(--green);
+  border: 7px solid var(--ink); box-shadow: 8px 10px 0 var(--ink); display: grid; place-items: center; }
+.play svg { width: 74px; height: 84px; margin-left: 14px; }
+
+/* ---------- stickers from fal.ai ---------- */
+.stk { position: absolute; }
+.stk img { display: block; width: 100%; filter: drop-shadow(5px 6px 0 var(--ink)); }
+
+/* ---------- scene 2b: counter ---------- */
+.lbl { position: absolute; left: var(--mx); font: 700 44px/1 Onest; letter-spacing: -.2px; }
+.numline { position: absolute; left: var(--mx); font-family: Unbounded; font-weight: 900; line-height: .98;
+  letter-spacing: -1px; white-space: nowrap; width: max-content; }
+.numline { text-transform: uppercase; }
+.numline .cur { font-size: .66em; }
+.numline .wi { padding: 0 .02em; }
+.numbox { display: inline-block; text-align: right; }
+
+/* ---------- scene 4: comment field ---------- */
+.field { position: absolute; left: var(--mx); width: 936px; height: 124px; background: var(--paper);
+  border: 4px solid var(--ink); border-radius: 62px; box-shadow: 5px 6px 0 var(--ink);
+  display: flex; align-items: center; padding: 0 30px 0 44px; }
+.typed { font: 500 42px/1 Onest; color: var(--ink); white-space: pre; letter-spacing: -.2px; }
+.caret { width: 4px; height: 52px; background: var(--ink); margin-left: 3px; border-radius: 2px; }
+.send { margin-left: auto; width: 76px; height: 76px; border-radius: 50%; background: var(--green);
+  border: 4px solid var(--ink); display: grid; place-items: center; flex: none; }
+.send svg { width: 30px; height: 30px; }
+
+/* ---------- wipe ---------- */
+#stripe { position: absolute; top: 0; height: 1920px; width: 64px; background: var(--yellow);
+  border-left: 6px solid var(--ink); border-right: 6px solid var(--ink); display: none; z-index: 50; }
+
+/* ---------- mode A: the creator's video sits underneath (frames rendered with alpha) ----------
+   The cover (scene 1 at t = 0) keeps its teal card; the stripe wipes it away to the video. */
+/* 1 px left transparent at the bottom: every frame then saves as RGBA, so ffmpeg never switches pixel format mid-sequence */
+.bgfill { position: absolute; inset: 0 0 1px 0; background: var(--teal); display: none; }
+body.video, body.video #stage { background: transparent; }
+body.video .scene { background: transparent !important; }
+body.video .bgfill { display: block; }
+body.video #hook, body.video #sc2, body.video #sc3, body.video #sc4 { color: var(--paper); }
+body.video #hook .acc, body.video #sc2 .acc, body.video #sc3 .acc, body.video #sc4 .acc { color: var(--ink); text-shadow: none; }
+body.video #hook .mk, body.video #sc4 .mk { display: block; }
+body.video #sc2 .halftone, body.video #sc3 .halftone, body.video #sc4 .halftone { --dot: rgba(93,199,160,.45) !important; }
+body.video #sc3 .blob, body.video #sc4 .blob { display: none; }
+body.video #sc2 .footer, body.video #sc3 .footer, body.video #sc4 .footer { color: var(--paper); }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ===== scene 1: teal. Frame 0 is the cover, then the hook ===== -->
+  <section class="scene s-teal" id="sc1">
+    <div id="deco1" style="position: absolute; inset: 0;">
+      <div class="bgfill"></div>
+      <div class="halftone" id="ht1" style="--dot: rgba(12,15,14,.2); width: 600px; height: 600px; left: 590px; top: 330px;"></div>
+      <svg class="blob" id="bl1" style="--blobc: var(--blob); width: 560px; height: 560px; left: -150px; top: 1060px;" viewBox="0 0 200 200"><path transform="translate(100 100)" d="M44.7,-61.6C57.3,-52.3,66.5,-38.6,71.1,-23.4C75.7,-8.2,75.6,8.4,69.9,22.5C64.2,36.6,52.9,48.2,39.6,57.2C26.3,66.2,11.1,72.6,-4.6,78.9C-20.3,85.2,-36.5,91.4,-48.5,85.1C-60.6,78.8,-68.5,59.9,-73.3,41.8C-78.1,23.7,-79.8,6.4,-76.1,-9.3C-72.4,-25,-63.3,-39.1,-51.1,-48.5C-38.9,-57.9,-23.6,-62.6,-8.2,-64.3C7.2,-66,32.1,-70.9,44.7,-61.6Z"/></svg>
+      <svg class="wave" id="wv1" style="width: 340px; height: 144px; left: 80px; top: 1380px;" viewBox="0 0 170 72"><path pathLength="1" d="M4 40 C 24 4, 40 4, 52 36 S 84 68, 100 34 S 140 4, 166 30"/></svg>
+    </div>
+    <div class="pill">@blacksea.ua</div>
+    <h1 class="head" id="coverHead" data-size="118" style="top: 440px;">Велика / аудиторія / *не / потрібна*</h1>
+    <p class="sub" id="coverSub">кейс автора: уроки за 1&nbsp;500&nbsp;грн на тиждень</p>
+    <div class="play" id="play" style="left: 770px; top: 1250px;"><svg viewBox="0 0 74 84"><path d="M4 6 L70 42 L4 78 Z" fill="#0c0f0e" stroke="#0c0f0e" stroke-width="8" stroke-linejoin="round"/></svg></div>
+    <h1 class="head" id="hook" data-size="124" data-center="900">Тобі *не / потрібна* / велика / аудиторія</h1>
+    <div class="footer" id="footer1">blacksea.in.ua</div>
+  </section>
+
+  <!-- ===== scene 2: paper with grid. The case ===== -->
+  <section class="scene s-paper" id="sc2">
+    <div class="halftone" id="ht2" style="--dot: rgba(73,109,105,.38); width: 560px; height: 560px; left: 600px; top: 980px;"></div>
+    <svg class="wave" id="wv2" style="width: 300px; height: 128px; left: 700px; top: 400px;" viewBox="0 0 170 72"><path pathLength="1" d="M4 40 C 24 4, 40 4, 52 36 S 84 68, 100 34 S 140 4, 166 30"/></svg>
+    <div class="pill">@blacksea.ua</div>
+    <div class="tag" id="tag2">кейс автора</div>
+    <h1 class="head" id="h2a" data-size="118" style="top: 540px;">Автор / викладає / *польську та / норвезьку*</h1>
+    <div class="stk" id="st-notebook" style="left: 70px; top: 1110px; width: 430px;"><img src="../assets/fal/01-notebook.png" alt=""></div>
+    <div class="stk" id="st-cards" style="left: 560px; top: 1150px; width: 300px;"><img src="../assets/fal/02-flashcards.png" alt=""></div>
+    <div class="lbl" id="lbl2b" style="top: 580px;">уроки на BlackSea</div>
+    <div class="numline" id="num" data-size="200" style="top: 660px;"><span class="w acc"><span class="wi"><span class="mk"></span><span class="tx"><span class="numbox" id="numbox"><span id="numval">1&nbsp;500</span></span>&nbsp;<span class="cur">грн</span></span></span></span></div>
+    <h1 class="head" id="h2b" data-size="118" style="top: 830px;">за тиждень</h1>
+    <div class="footer">blacksea.in.ua</div>
+  </section>
+
+  <!-- ===== scene 3: dark ink. The opinion ===== -->
+  <section class="scene s-ink" id="sc3">
+    <div class="halftone" id="ht3" style="--dot: rgba(137,183,176,.42); width: 620px; height: 620px; left: -170px; top: 1010px;"></div>
+    <svg class="blob" id="bl3" style="--blobc: var(--teal-d); width: 500px; height: 500px; left: 760px; top: 120px;" viewBox="0 0 200 200"><path transform="translate(100 100) rotate(140)" d="M44.7,-61.6C57.3,-52.3,66.5,-38.6,71.1,-23.4C75.7,-8.2,75.6,8.4,69.9,22.5C64.2,36.6,52.9,48.2,39.6,57.2C26.3,66.2,11.1,72.6,-4.6,78.9C-20.3,85.2,-36.5,91.4,-48.5,85.1C-60.6,78.8,-68.5,59.9,-73.3,41.8C-78.1,23.7,-79.8,6.4,-76.1,-9.3C-72.4,-25,-63.3,-39.1,-51.1,-48.5C-38.9,-57.9,-23.6,-62.6,-8.2,-64.3C7.2,-66,32.1,-70.9,44.7,-61.6Z"/></svg>
+    <svg class="wave" id="wv3" style="width: 320px; height: 136px; left: 640px; top: 1440px;" viewBox="0 0 170 72"><path pathLength="1" d="M4 40 C 24 4, 40 4, 52 36 S 84 68, 100 34 S 140 4, 166 30"/></svg>
+    <div class="pill">@blacksea.ua</div>
+    <div class="tag" id="tag3">думка</div>
+    <h1 class="head" id="h3a" data-size="118" style="top: 540px;">Те, що ти / вже вмієш / *пояснювати*</h1>
+    <div class="stk" id="st-bubbles" style="left: 330px; top: 1060px; width: 470px;"><img src="../assets/fal/04-speech-bubbles.png" alt=""></div>
+    <h1 class="head" id="h3b" data-size="124" style="top: 540px;">Цифровий / продукт / *без ФОП*</h1>
+    <div class="stk" id="st-laptop" style="left: 250px; top: 1060px; width: 560px;"><img src="../assets/fal/03-headphones-laptop.png" alt=""></div>
+    <div class="footer">blacksea.in.ua</div>
+  </section>
+
+  <!-- ===== scene 4: green. The call to action ===== -->
+  <section class="scene s-green" id="sc4">
+    <div class="halftone" id="ht4" style="--dot: rgba(12,15,14,.2); width: 600px; height: 600px; left: 560px; top: 1050px;"></div>
+    <svg class="blob" id="bl4" style="--blobc: #84d6b6; width: 520px; height: 520px; left: -170px; top: 160px;" viewBox="0 0 200 200"><path transform="translate(100 100) rotate(60)" d="M44.7,-61.6C57.3,-52.3,66.5,-38.6,71.1,-23.4C75.7,-8.2,75.6,8.4,69.9,22.5C64.2,36.6,52.9,48.2,39.6,57.2C26.3,66.2,11.1,72.6,-4.6,78.9C-20.3,85.2,-36.5,91.4,-48.5,85.1C-60.6,78.8,-68.5,59.9,-73.3,41.8C-78.1,23.7,-79.8,6.4,-76.1,-9.3C-72.4,-25,-63.3,-39.1,-51.1,-48.5C-38.9,-57.9,-23.6,-62.6,-8.2,-64.3C7.2,-66,32.1,-70.9,44.7,-61.6Z"/></svg>
+    <div class="pill">@blacksea.ua</div>
+    <div class="tag" id="tag4">питання до тебе</div>
+    <h1 class="head" id="h4" data-size="124" style="top: 520px;">Скільки / коштував / би твій / *урок?*</h1>
+    <div class="field" id="field" style="top: 1080px;"><span class="typed" id="typed"></span><span class="caret" id="caret"></span>
+      <span class="send"><svg viewBox="0 0 30 30"><path d="M15 26 V5 M6 13 L15 4 L24 13" fill="none" stroke="#0c0f0e" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+    <div class="stk" id="st-star" style="left: 90px; top: 1250px; width: 270px;"><img src="../assets/fal/05-star.png" alt=""></div>
+    <div class="footer">blacksea.in.ua</div>
+  </section>
+
+  <!-- mode A only: the cover card that opens the video version -->
+  <div id="stripe"></div>
+</div>
+<script src="node_modules/motion/dist/motion.js"></script>
+<script src="scene.js"></script>
+</body>
+</html>

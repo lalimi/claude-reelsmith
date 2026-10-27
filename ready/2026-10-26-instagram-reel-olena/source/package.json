@@ -1,0 +1,10 @@
+{
+  "name": "reel-2026-10-26-audience",
+  "private": true,
+  "type": "module",
+  "description": "Typographic reel: HTML scene animated with Motion, frames captured by Playwright, encoded by ffmpeg",
+  "scripts": { "build": "node render.mjs" },
+  "dependencies": {
+    "motion": "14.6.0"
+  }
+}

@@ -10,6 +10,7 @@ reels/
 **/frames/
 **/stills/
 **/out/
+**/input/
 **/vo/*.mp3
 **/vo/*.json
 .env
