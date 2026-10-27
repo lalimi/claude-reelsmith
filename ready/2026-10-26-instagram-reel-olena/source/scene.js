@@ -8,13 +8,20 @@ const VIDEO = new URLSearchParams(location.search).get('mode') === 'video';
 if (VIDEO) { document.body.classList.add('video'); document.documentElement.style.background = 'transparent'; }
 
 // Beats (seconds). Script: hook 0-3, case 3-10, opinion 10-18, call to action 18-22.
-const T = {
+// With a voice-over, render.mjs passes window.__BEATS computed from the word timings.
+const T = Object.assign({
   coverOut: 0.30, hookIn: 0.54,
   wipe12: 2.86, s2aIn: 3.06, s2aOut: 5.96, s2bIn: 6.20, countIn: 6.44, countDur: 0.8,
   wipe23: 9.84, s3aIn: 10.04, s3aOut: 13.84, s3bIn: 14.10,
   wipe34: 17.84, s4In: 18.04, typeIn: 19.0, typeStep: 0.045,
   end: 22.0,
-};
+}, window.__BEATS || {});
+// accent pops land on the spoken word when there is a voice, else a fixed delay after the text
+T.accHook ??= T.hookIn + 0.42;
+T.acc2a ??= T.s2aIn + 0.62;
+T.acc3a ??= T.s3aIn + 0.66;
+T.acc3b ??= T.s3bIn + 0.52;
+T.acc4 ??= T.s4In + 0.48;
 const WIPE = 0.18;
 const W = 1080, MX = 72, MAXW = W - 2 * MX;
 
@@ -220,7 +227,7 @@ async function setup() {
     $('play').style.transform = `scale(${mix(1, 0.4, r).toFixed(4)}) rotate(${mix(0, 20, r).toFixed(2)}deg)`;
     $('play').style.opacity = (1 - r).toFixed(3);
   });
-  words($('hook'), { tIn: T.hookIn, accent: T.hookIn + 0.42 });
+  words($('hook'), { tIn: T.hookIn, accent: T.accHook });
   drift($('ht1'), 0, T.wipe12 + WIPE, -30, 18);
   drift($('bl1'), 0, T.wipe12 + WIPE, 26, -20);
   if (VIDEO) {
@@ -236,7 +243,7 @@ async function setup() {
   wipe($('sc2'), $('sc1'), T.wipe12);
   tag($('tag2'), T.s2aIn - 0.02);
   draw($('wv2'), T.s2aIn + 0.25);
-  words($('h2a'), { tIn: T.s2aIn + 0.08, tOut: T.s2aOut, accent: T.s2aIn + 0.62 });
+  words($('h2a'), { tIn: T.s2aIn + 0.08, tOut: T.s2aOut, accent: T.acc2a });
   sticker($('st-notebook'), T.s2aIn + 0.5, null, -160, 140);   // lessons stay on screen through the number
   sticker($('st-cards'), T.s2aIn + 0.68, null, 160, 140);
   rise($('lbl2b'), T.s2bIn);
@@ -253,9 +260,9 @@ async function setup() {
   wipe($('sc3'), $('sc2'), T.wipe23);
   tag($('tag3'), T.s3aIn - 0.02);
   draw($('wv3'), T.s3aIn + 0.3);
-  words($('h3a'), { tIn: T.s3aIn + 0.08, tOut: T.s3aOut, accent: T.s3aIn + 0.66 });
+  words($('h3a'), { tIn: T.s3aIn + 0.08, tOut: T.s3aOut, accent: T.acc3a });
   sticker($('st-bubbles'), T.s3aIn + 0.5, T.s3aOut, 150, 150);
-  words($('h3b'), { tIn: T.s3bIn + 0.04, accent: T.s3bIn + 0.52 });
+  words($('h3b'), { tIn: T.s3bIn + 0.04, accent: T.acc3b });
   sticker($('st-laptop'), T.s3bIn + 0.42, null, -150, 150);
   drift($('ht3'), T.wipe23, T.wipe34 + WIPE, 32, -18);
   drift($('bl3'), T.wipe23, T.wipe34 + WIPE, -24, 22);
@@ -263,7 +270,7 @@ async function setup() {
   // ----- scene 4: the call to action -----
   wipe($('sc4'), $('sc3'), T.wipe34);
   tag($('tag4'), T.s4In - 0.02);
-  words($('h4'), { tIn: T.s4In + 0.08, accent: T.s4In + 0.48 });
+  words($('h4'), { tIn: T.s4In + 0.08, accent: T.acc4 });
   rise($('field'), T.s4In + 0.62, null, 60);
   const text = 'напиши цифру в коментарях';
   const typeEnd = T.typeIn + text.length * T.typeStep;
