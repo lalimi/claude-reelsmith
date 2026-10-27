@@ -1,10 +1,10 @@
 """Cut the plain off-white background out of the fal.ai illustrations.
 
-Usage: python3 source/cutout.py assets/fal/raw/*.webp --out assets/fal
+Usage: python3 source/cutout.py assets/fal/raw/*.png --out assets/fal
 
 Flood-fills the background from the image border (so white areas enclosed by
 the ink outline stay), softens the edge band, removes the light halo by
-un-mixing the background colour, crops to the object and upscales 2x.
+un-mixing the background colour, crops to the object (small previews are also upscaled 2x).
 """
 import argparse
 import pathlib
@@ -46,8 +46,10 @@ def cutout(src: pathlib.Path) -> Image.Image:
     pad = 10
     box = (max(xs.min() - pad, 0), max(ys.min() - pad, 0), min(xs.max() + pad, w), min(ys.max() + pad, h))
     im = im.crop(box)
-    im = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
-    return im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=60, threshold=2))
+    if h < 1000:  # small previews get 2x, full-size originals stay as they are
+        im = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
+        im = im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=60, threshold=2))
+    return im
 
 
 def main():

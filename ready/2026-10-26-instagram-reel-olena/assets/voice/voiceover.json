@@ -1,5 +1,5 @@
 {
- "about": "ElevenLabs voice-over for the reel. render.mjs downloads `url` to voiceover.mp3, shortens pauses to 0.3 s and retimes the screens to `words`.",
+ "about": "ElevenLabs voice-over for the reel. render.mjs downloads `tts.url` to voiceover.mp3 if it is missing, shortens pauses to 0.3 s and retimes the screens to `words`.",
  "tts": {
   "provider": "ElevenLabs Eleven v4 via fal.ai (Lalita's fal account)",
   "endpoint": "elevenlabs/tts/eleven-v4",
@@ -272,5 +272,12 @@
    "to": 40,
    "text": "Напиши цифру в коментарях."
   }
- ]
+ ],
+ "check_reel": {
+  "about": "Speech-to-text of the mounted reel audio (pauses shortened): every word present",
+  "endpoint": "fal-ai/elevenlabs/speech-to-text/scribe-v2",
+  "request_id": "01a17ca3-7e0f-7841-8b55-fe395150eb8b",
+  "cost_usd": 0.003,
+  "transcript": "Тобі не потрібна велика аудиторія. Автор викладає польську та норвезьку. Уроки на Black Sea принесли тисячу п'ятсот гривень за тиждень. Те, що ти вже вмієш пояснювати, можна оформити як цифровий продукт без ФОП. Скільки коштував би твій урок? Напиши цифру в коментарях."
+ }
 }

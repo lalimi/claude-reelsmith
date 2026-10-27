@@ -52,14 +52,19 @@ const clamp = (lo, hi, v) => Math.min(hi, Math.max(lo, v));
 const r3 = v => Math.round(v * 1000) / 1000;
 
 // ---------- voice plan: cuts in the pauses, the time map, screen beats and subtitle cues ----------
+// pauses in the file: below -35 dB (soft breaths sit around -38 dB), pieces closer than 40 ms joined
 function silences(file) {
-  const log = spawnSync('ffmpeg', ['-hide_banner', '-i', file, '-af', 'silencedetect=noise=-40dB:d=0.05', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
+  const log = spawnSync('ffmpeg', ['-hide_banner', '-i', file, '-af', 'silencedetect=noise=-35dB:d=0.05', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
   const out = [];
   let s = null;
   for (const line of log.split('\n')) {
     const a = line.match(/silence_start: ([\d.]+)/), b = line.match(/silence_end: ([\d.]+)/);
     if (a) s = +a[1];
-    if (b && s != null) { out.push([s, +b[1]]); s = null; }
+    if (b && s != null) {
+      const prev = out[out.length - 1];
+      if (prev && s - prev[1] < 0.04) prev[1] = +b[1]; else out.push([s, +b[1]]);
+      s = null;
+    }
   }
   return out;
 }
@@ -68,16 +73,17 @@ function voicePlan(vo, file) {
   const w = vo.words.map(([text, s, e]) => ({ text, s, e }));
   const quiet = silences(file);
   const cuts = [];
+  const overlap = ([a, b], [c, d]) => Math.min(b, d) - Math.max(a, c);
   for (let i = 1; i < w.length; i++) {
-    const gap = w[i].s - w[i - 1].e;
-    if (gap <= MAX_PAUSE + 0.01) continue;
-    const mid = (w[i].s + w[i - 1].e) / 2, r = gap - MAX_PAUSE;
-    let [a, b] = [mid - r / 2, mid + r / 2];
-    // keep the cut inside real silence, so no syllable is clipped even if a word timing is off
-    const q = quiet.find(([qa, qb]) => qb > a && qa < b);
+    if (w[i].s - w[i - 1].e <= MAX_PAUSE) continue;
+    // the real pause is the silence between the two words; cut its middle so MAX_PAUSE - 0.04 of it stays
+    const span = [w[i - 1].e - 0.1, w[i].s + 0.1];
+    const q = quiet.filter(x => overlap(x, span) > 0).sort((x, y) => overlap(y, span) - overlap(x, span))[0];
     if (!q) { console.warn(`  pause ${w[i - 1].text} / ${w[i].text}: no silence found, kept as is`); continue; }
-    a = Math.max(a, q[0] + 0.03); b = Math.min(b, q[1] - 0.03);
-    if (b - a > 0.02) cuts.push([r3(a), r3(b)]);
+    const len = q[1] - q[0];
+    if (len <= MAX_PAUSE) continue;
+    const mid = (q[0] + q[1]) / 2, r = len - (MAX_PAUSE - 0.04);
+    cuts.push([r3(mid - r / 2), r3(mid + r / 2)]);
   }
   const map = t => OFF + t - cuts.reduce((acc, [a, b]) => acc + clamp(0, b - a, t - a), 0);
   const find = (prefix, from = 0) => {
@@ -185,7 +191,7 @@ async function main(browser) {
 
   const out = path.resolve(outArg || path.join(REEL, 'reel.mp4'));
   const enc = ['-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p', '-profile:v', 'high',
-    '-level:v', '4.1', '-r', String(FPS), '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-movflags', '+faststart'];
+    '-level:v', '4.1', '-r', String(FPS), '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2', '-movflags', '+faststart'];
   const framesIn = ['-framerate', String(FPS), '-i', path.join(frames, 'f%04d.png')];
 
   if (plan) {
