@@ -11,6 +11,6 @@ claude-reelsmith is MIT-licensed (see `LICENSE`). It includes or builds on:
 | three.js (installed by `reelsmith setup`) | `node_modules/` | three.js authors | MIT |
 | faster-whisper, NumPy, OpenCV (installed into the venv) | data folder | their authors | MIT / BSD / Apache-2.0 |
 
-Not included, downloaded by the user if they want it: FFmpeg, CapCut's plugin bundle (uploader + draft builder, CapCut's own terms), ElevenLabs (their terms; the free plan requires attribution and is non-commercial).
+Not included, downloaded by the user if they want it: FFmpeg, CapCut's plugin bundle (uploader + draft builder, CapCut's own terms), ElevenLabs (their terms; the free plan requires attribution and is non-commercial), HyperFrames (Apache-2.0, a separate Claude Code plugin that `.claude/settings.json` offers to install), OpenMontage (AGPL-3.0, cloned separately, see `docs/companions.md`).
 
 The demo reel and the images in `docs/img/` are © lalimi; the footage is the author's own. Voice in the demo: ElevenLabs.
