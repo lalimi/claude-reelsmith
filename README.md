@@ -49,6 +49,12 @@ Check anytime with `reelsmith doctor`.
 - **CapCut MCP** — bundled (`.mcp.json`); sign in once via `/mcp`. Needed only for the CapCut route → [docs/capcut.md](docs/capcut.md).
 - **ElevenLabs** — TTS voice-over if you don't record your own → [docs/voice.md](docs/voice.md).
 
+### Companion tools (optional)
+- **[HyperFrames](https://github.com/heygen-com/hyperframes)** (HeyGen) — HTML-to-video skills for motion-graphics pieces without footage. Enabled for this repo in `.claude/settings.json`.
+- **[OpenMontage](https://github.com/calesthio/OpenMontage)** — a full agentic production studio (AI clips, stock-footage documentaries, dubbing), cloned separately.
+
+When to use which and how to install: [docs/companions.md](docs/companions.md).
+
 ## Quick start
 
 Open Claude Code in a folder for your reels and say:
