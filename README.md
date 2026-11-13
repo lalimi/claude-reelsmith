@@ -16,6 +16,7 @@ You approve an idea and a script. Claude writes it, voices it, picks fresh shots
 | 🎬 **reel-director** | The director. Runs the job end to end, picks the story structure, decides which 3–5 effects go on which beat, plans transitions and sound, then reviews the cut like a critic before you see it. |
 | ✍️ **reel-script** | Scroll-stopping scripts from 7 structures (4 reverse-engineered from viral reels + "the experiment", "reverse breakdown", "POV scene"), 9 evidence-graded hook types and a retention checklist. Analyses reels you paste, writes in your language. |
 | 🎞 **footage-scout** | Picks fresh clips from a folder or a shared iCloud Photos album in your browser, downloads only what the edit needs, makes contact sheets, skips private details, keeps a used-footage log. |
+| 🗂 **reel-storyboard** | Before any render, shows you the whole edit on one HTML page: a card per scene with a real frame from your clip, on-screen text, the voice line and whether it fits its timing, effects, sound and red flags (private details on screen, the person talking while the voice says something else). Fix it in words, say yes, then it renders. |
 | ✂️ **reel-builder** | The editor + motion designer: one `reel.json` → finished 1080×1920 MP4 with subtitles, cards, effects, music and a −14 LUFS mix. |
 | 🗣 **talking-head-edit** | For videos where you talk to camera: cleans audio, cuts fillers, word-by-word captions, layout changes, UI cards. |
 | 🔊 **reel-capcut** | Sends the reel to an editable **CapCut** draft with library sound effects on every transition, so you can swap music and sounds by ear. |
@@ -55,7 +56,7 @@ Open Claude Code in a folder for your reels and say:
 
 > Make me a 45-second reel for my Instagram about why people never launch their course. My clips are in the shared album "Reels" — use only new ones. Voice: my recording in voice.m4a.
 
-The director asks a few questions, shows you a script to approve, then builds. Or drive the engine yourself:
+The director asks a few questions, shows you a script to approve, then a storyboard, then builds. Or drive the engine yourself:
 
 ```bash
 reelsmith new reels/launch          # folder + template reel.json
